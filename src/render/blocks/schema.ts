@@ -8,6 +8,7 @@ import {
 } from "./chart/stacked-area";
 import { createBarcodeBlockSchema, type BarcodeBlock } from "./barcode/schema";
 import { createBrBlockSchema, type BrBlock } from "./br/schema";
+import { createHeatmapBlockSchema, type HeatmapBlock } from "./heatmap";
 import { createImageBlockSchema, type ImageBlock } from "./image/schema";
 import { createLineBlockSchema, type LineBlock } from "./line/schema";
 import { createProgressBlockSchema, type ProgressBlock } from "./progress";
@@ -31,6 +32,7 @@ export const createPrintBlockSchema = (
     createBarChartBlockSchema(options.maxTextCharsPerBlock),
     createBarcodeBlockSchema(),
     createBrBlockSchema(),
+    createHeatmapBlockSchema(options.maxTextCharsPerBlock),
     createImageBlockSchema({
       allowRemoteImageUrls: options.allowRemoteImageUrls,
     }),
@@ -50,6 +52,7 @@ export type PrintBlock =
   | BarChartBlock
   | BarcodeBlock
   | BrBlock
+  | HeatmapBlock
   | ImageBlock
   | LineBlock
   | LineChartBlock
@@ -99,6 +102,14 @@ export const createPrintRequestSchema = (options: {
               items: [
                 { label: "Mon", value: 12 },
                 { label: "Tue", value: 18 },
+              ],
+            },
+            {
+              type: "heatmap",
+              labels: ["Mon", "Tue", "Wed"],
+              values: [
+                [null, 3, 1],
+                [0, 3, 2],
               ],
             },
             {

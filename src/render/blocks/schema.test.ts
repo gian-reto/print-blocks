@@ -110,6 +110,34 @@ describe("print request schema", () => {
     });
   });
 
+  it("accepts heatmap blocks", () => {
+    const result = createSchema().parse({
+      blocks: [
+        {
+          type: "heatmap",
+          labels: ["Mon", "Tue"],
+          values: [
+            [1, 0],
+            [null, 3],
+          ],
+        },
+      ],
+    });
+
+    expect(result).toEqual({
+      blocks: [
+        {
+          type: "heatmap",
+          labels: ["Mon", "Tue"],
+          values: [
+            [1, 0],
+            [null, 3],
+          ],
+        },
+      ],
+    });
+  });
+
   it("accepts image blocks", () => {
     const result = createSchema().parse({
       blocks: [{ type: "image", data: whitePixelPngBase64, align: "center" }],

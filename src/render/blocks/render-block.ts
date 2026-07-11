@@ -4,6 +4,7 @@ import { renderAreaChartBlock } from "./chart/area";
 import { renderBarChartBlock } from "./chart/bar";
 import { renderBarcodeBlock } from "./barcode";
 import { renderBrBlock } from "./br";
+import { renderHeatmapBlock } from "./heatmap";
 import { renderImageBlock } from "./image";
 import { renderLineBlock } from "./line";
 import { renderLineChartBlock } from "./chart/line";
@@ -29,6 +30,9 @@ export const renderBlock = (block: PrintBlock, context: BlockRenderContext) => {
 
     case "br":
       return renderBrBlock(block);
+
+    case "heatmap":
+      return renderHeatmapBlock(block, context);
 
     case "image":
       return renderImageBlock(block, context);

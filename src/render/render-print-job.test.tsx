@@ -91,6 +91,14 @@ describe("renderPrintJob", () => {
           ],
         },
         {
+          type: "heatmap",
+          labels: ["Mon", "Tue", "Wed"],
+          values: [
+            [null, 3, 1],
+            [0, 3, 2],
+          ],
+        },
+        {
           type: "lineChart",
           series: [
             { label: "API", values: [120, 140, 110] },
