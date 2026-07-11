@@ -9,6 +9,8 @@ The service has no UI. It exposes:
 - `POST /print` for authenticated print jobs.
 - `GET /healthz` for unauthenticated liveness checks.
 - `GET /openapi.json` for generated OpenAPI JSON.
+- `GET /docs` for an interactive Scalar API reference.
+- `GET /llms.txt` for LLM-friendly Markdown API documentation.
 
 ## Requirements
 
@@ -98,6 +100,14 @@ Returns:
 ### `GET /openapi.json`
 
 Returns the OpenAPI specification for the API.
+
+### `GET /docs`
+
+Returns an interactive API reference backed by Scalar and `/openapi.json`.
+
+### `GET /llms.txt`
+
+Returns Markdown API documentation generated from the OpenAPI specification.
 
 ## Manual smoke test
 

@@ -194,4 +194,36 @@ describe("app", () => {
       scheme: "bearer",
     });
   });
+
+  it("serves the Scalar API reference", async () => {
+    const app = createApp({
+      config,
+      enableRequestLogging: false,
+      printTransport: createRecordingTransport().transport,
+    });
+
+    const response = await app.request("/docs");
+    const body = await response.text();
+
+    expect(response.status).toBe(status.OK);
+    expect(response.headers.get("content-type")).toContain("text/html");
+    expect(body).toContain("Print Blocks API Reference");
+    expect(body).toContain("/openapi.json");
+  });
+
+  it("serves LLM-friendly API documentation", async () => {
+    const app = createApp({
+      config,
+      enableRequestLogging: false,
+      printTransport: createRecordingTransport().transport,
+    });
+
+    const response = await app.request("/llms.txt");
+    const body = await response.text();
+
+    expect(response.status).toBe(status.OK);
+    expect(response.headers.get("content-type")).toContain("text/plain");
+    expect(body).toContain("Print Blocks API");
+    expect(body).toContain("/print");
+  });
 });
