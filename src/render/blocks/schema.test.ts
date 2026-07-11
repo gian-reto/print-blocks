@@ -70,6 +70,46 @@ describe("print request schema", () => {
     });
   });
 
+  it("accepts area chart blocks", () => {
+    const result = createSchema().parse({
+      blocks: [
+        {
+          type: "areaChart",
+          series: { label: "Room", values: [19, 21] },
+        },
+      ],
+    });
+
+    expect(result).toEqual({
+      blocks: [
+        {
+          type: "areaChart",
+          series: { label: "Room", values: [19, 21] },
+        },
+      ],
+    });
+  });
+
+  it("accepts bar chart blocks", () => {
+    const result = createSchema().parse({
+      blocks: [
+        {
+          type: "barChart",
+          items: [{ label: "Mon", value: 12 }],
+        },
+      ],
+    });
+
+    expect(result).toEqual({
+      blocks: [
+        {
+          type: "barChart",
+          items: [{ label: "Mon", value: 12 }],
+        },
+      ],
+    });
+  });
+
   it("accepts image blocks", () => {
     const result = createSchema().parse({
       blocks: [{ type: "image", data: whitePixelPngBase64, align: "center" }],
@@ -95,6 +135,26 @@ describe("print request schema", () => {
 
     expect(result).toEqual({
       blocks: [{ type: "line", character: "=" }],
+    });
+  });
+
+  it("accepts line chart blocks", () => {
+    const result = createSchema().parse({
+      blocks: [
+        {
+          type: "lineChart",
+          series: [{ label: "API", values: [120, 140] }],
+        },
+      ],
+    });
+
+    expect(result).toEqual({
+      blocks: [
+        {
+          type: "lineChart",
+          series: [{ label: "API", values: [120, 140] }],
+        },
+      ],
     });
   });
 
@@ -125,6 +185,32 @@ describe("print request schema", () => {
           type: "row",
           left: { content: "Item" },
           right: { content: "1.00", bold: true },
+        },
+      ],
+    });
+  });
+
+  it("accepts stacked area chart blocks", () => {
+    const result = createSchema().parse({
+      blocks: [
+        {
+          type: "stackedAreaChart",
+          series: [
+            { label: "Solar", values: [5, 8] },
+            { label: "Grid", values: [4, 3] },
+          ],
+        },
+      ],
+    });
+
+    expect(result).toEqual({
+      blocks: [
+        {
+          type: "stackedAreaChart",
+          series: [
+            { label: "Solar", values: [5, 8] },
+            { label: "Grid", values: [4, 3] },
+          ],
         },
       ],
     });

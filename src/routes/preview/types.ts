@@ -2,7 +2,6 @@ import type { ReactNode } from "react";
 
 export type SatoriPreviewExample = {
   element: ReactNode;
-  width?: number;
 };
 
 export type SatoriPreview = {
@@ -10,6 +9,8 @@ export type SatoriPreview = {
   title: string;
 };
 
+export type SatoriPreviewFactory = (width: number) => SatoriPreview;
+
 export type SatoriPreviewModule = {
-  default: SatoriPreview;
+  default: SatoriPreviewFactory;
 };

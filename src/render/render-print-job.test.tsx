@@ -69,6 +69,34 @@ describe("renderPrintJob", () => {
           title: "Code",
           content: "LOREM IPSUM",
         },
+        {
+          type: "lineChart",
+          series: [
+            { label: "API", values: [120, 140, 110] },
+            { label: "DB", values: [80, 90, 95] },
+          ],
+          xLabels: ["10:00", "10:05", "10:10"],
+        },
+        {
+          type: "areaChart",
+          series: { label: "Room", values: [19, 21, 20] },
+          xLabels: ["08:00", "10:00", "12:00"],
+        },
+        {
+          type: "stackedAreaChart",
+          series: [
+            { label: "Solar", values: [5, 8, 7] },
+            { label: "Grid", values: [4, 3, 6] },
+          ],
+          xLabels: ["Mon", "Tue", "Wed"],
+        },
+        {
+          type: "barChart",
+          items: [
+            { label: "Mon", value: 12 },
+            { label: "Tue", value: 18 },
+          ],
+        },
       ],
     });
 

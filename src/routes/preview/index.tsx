@@ -7,7 +7,7 @@ import { renderSatoriSvg } from "../../render/satori";
 import { renderToStaticMarkup } from "react-dom/server";
 
 const previewModules = import.meta.glob<SatoriPreviewModule>(
-  "../../render/blocks/*/component.preview.tsx",
+  "../../render/blocks/**/component.preview.tsx",
 );
 
 type RegisterPreviewRouteOptions = {
@@ -33,10 +33,10 @@ const getRequestedPrinterDotWidth = (
     : fallback;
 };
 
-const loadPreviewEntries = async (): Promise<PreviewEntry[]> => {
+const loadPreviewEntries = async (width: number): Promise<PreviewEntry[]> => {
   const entries = await Promise.all(
     Object.values(previewModules).map(async (loadModule) => ({
-      preview: (await loadModule()).default,
+      preview: (await loadModule()).default(width),
     })),
   );
 
@@ -51,14 +51,13 @@ const createSvgDataUrl = (svg: string) =>
 const renderPreviewEntries = async (
   entries: PreviewEntry[],
   config: AppConfig,
-  defaultPrinterDotWidth: number,
+  printerDotWidth: number,
 ): Promise<PreviewPageEntry[]> =>
   await Promise.all(
     entries.map(async ({ preview }) => ({
       title: preview.title,
       examples: await Promise.all(
         preview.examples.map(async (example) => {
-          const width = example.width ?? defaultPrinterDotWidth;
           const svg = await renderSatoriSvg({
             context: {
               imageSource: {
@@ -66,7 +65,7 @@ const renderPreviewEntries = async (
                 maxRemoteImageBytes: config.maxRemoteImageBytes,
                 remoteImageTimeoutMs: config.remoteImageTimeoutMs,
               },
-              printerDotWidth: width,
+              printerDotWidth,
             },
             element: example.element,
           });
@@ -90,15 +89,15 @@ export const registerPreviewRoute = (
   { config }: RegisterPreviewRouteOptions,
 ) => {
   app.get("/preview", async (c) => {
-    const entries = await loadPreviewEntries();
-    const defaultPrinterDotWidth = getRequestedPrinterDotWidth(
+    const printerDotWidth = getRequestedPrinterDotWidth(
       c.req.query("width"),
       config.printerDotWidth,
     );
+    const entries = await loadPreviewEntries(printerDotWidth);
     const renderedEntries = await renderPreviewEntries(
       entries,
       config,
-      defaultPrinterDotWidth,
+      printerDotWidth,
     );
 
     c.header("cache-control", "no-store");

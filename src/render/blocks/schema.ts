@@ -1,4 +1,11 @@
 import { z } from "@hono/zod-openapi";
+import { createAreaChartBlockSchema, type AreaChartBlock } from "./chart/area";
+import { createBarChartBlockSchema, type BarChartBlock } from "./chart/bar";
+import { createLineChartBlockSchema, type LineChartBlock } from "./chart/line";
+import {
+  createStackedAreaChartBlockSchema,
+  type StackedAreaChartBlock,
+} from "./chart/stacked-area";
 import { createBarcodeBlockSchema, type BarcodeBlock } from "./barcode/schema";
 import { createBrBlockSchema, type BrBlock } from "./br/schema";
 import { createImageBlockSchema, type ImageBlock } from "./image/schema";
@@ -18,6 +25,8 @@ export const createPrintBlockSchema = (
   options: CreatePrintBlockSchemaOptions,
 ) =>
   z.discriminatedUnion("type", [
+    createAreaChartBlockSchema(options.maxTextCharsPerBlock),
+    createBarChartBlockSchema(options.maxTextCharsPerBlock),
     createBarcodeBlockSchema(),
     createBrBlockSchema(),
     createImageBlockSchema({
@@ -26,17 +35,23 @@ export const createPrintBlockSchema = (
     createLineBlockSchema(),
     createQrCodeBlockSchema(),
     createRowBlockSchema(options.maxTextCharsPerBlock),
+    createLineChartBlockSchema(options.maxTextCharsPerBlock),
+    createStackedAreaChartBlockSchema(options.maxTextCharsPerBlock),
     createTextBlockSchema(options.maxTextCharsPerBlock),
     createTokenBlockSchema(options.maxTextCharsPerBlock),
   ]);
 
 export type PrintBlock =
+  | AreaChartBlock
+  | BarChartBlock
   | BarcodeBlock
   | BrBlock
   | ImageBlock
   | LineBlock
+  | LineChartBlock
   | QrCodeBlock
   | RowBlock
+  | StackedAreaChartBlock
   | TextBlock
   | TokenBlock;
 
@@ -69,6 +84,18 @@ export const createPrintRequestSchema = (options: {
               type: "br",
             },
             {
+              type: "areaChart",
+              series: { label: "Room", values: [19, 21, 20, 22] },
+              xLabels: ["08:00", "10:00", "12:00", "14:00"],
+            },
+            {
+              type: "barChart",
+              items: [
+                { label: "Mon", value: 12 },
+                { label: "Tue", value: 18 },
+              ],
+            },
+            {
               type: "image",
               data: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
               align: "center",
@@ -82,6 +109,14 @@ export const createPrintRequestSchema = (options: {
               character: "-",
             },
             {
+              type: "lineChart",
+              series: [
+                { label: "API", values: [120, 140, 110] },
+                { label: "DB", values: [80, 90, 95] },
+              ],
+              xLabels: ["10:00", "10:05", "10:10"],
+            },
+            {
               type: "qrcode",
               content: "https://example.com",
               align: "center",
@@ -90,6 +125,14 @@ export const createPrintRequestSchema = (options: {
               type: "row",
               left: { content: "Total" },
               right: { content: "12.50", bold: true },
+            },
+            {
+              type: "stackedAreaChart",
+              series: [
+                { label: "Solar", values: [5, 8, 7] },
+                { label: "Grid", values: [4, 3, 6] },
+              ],
+              xLabels: ["Mon", "Tue", "Wed"],
             },
             {
               type: "text",

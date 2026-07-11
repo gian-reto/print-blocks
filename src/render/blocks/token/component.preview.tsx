@@ -1,7 +1,7 @@
-import type { SatoriPreview } from "../../../routes/preview/types";
+import type { SatoriPreviewFactory } from "../../../routes/preview/types";
 import { TokenLayout } from "./component";
 
-const preview = {
+const createPreview: SatoriPreviewFactory = () => ({
   title: "Token",
   examples: [
     {
@@ -27,6 +27,6 @@ const preview = {
       ),
     },
   ],
-} satisfies SatoriPreview;
+});
 
-export default preview;
+export default createPreview;
