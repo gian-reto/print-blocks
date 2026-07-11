@@ -1,4 +1,6 @@
 .direnv/
 .DS_Store
+.env
 .temp/
+dist/
 node_modules/

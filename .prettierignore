@@ -1,0 +1,4 @@
+.temp
+dist
+compose.yaml
+pnpm-lock.yaml

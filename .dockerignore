@@ -1,0 +1,6 @@
+.git/
+.direnv/
+.env
+.temp/
+dist/
+node_modules/

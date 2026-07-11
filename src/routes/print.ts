@@ -1,0 +1,100 @@
+import { createRoute, type OpenAPIHono } from "@hono/zod-openapi";
+import type { AppConfig } from "../config";
+import type { PrintRequestSchema } from "../render/blocks/schema";
+import { ApiError } from "../http/error";
+import { auth, requireJsonContentType } from "../http/middleware";
+import {
+  createErrorResponseConfig,
+  createJsonResponseConfig,
+} from "../http/response";
+import { renderPrintJob } from "../render/render-print-job";
+import type { PrintTransport } from "../print/types";
+import status from "http-status";
+import { PrintError } from "../print/error";
+
+type RegisterPrintRouteOptions = {
+  config: AppConfig;
+  printRequestSchema: PrintRequestSchema;
+  transport: PrintTransport;
+};
+
+export const registerPrintRoute = (
+  app: OpenAPIHono,
+  { config, printRequestSchema, transport }: RegisterPrintRouteOptions,
+) => {
+  const route = createRoute({
+    method: "post",
+    path: "/print",
+    request: {
+      body: {
+        required: true,
+        content: {
+          "application/json": {
+            schema: printRequestSchema,
+          },
+        },
+      },
+    },
+    responses: {
+      [status.OK]: createJsonResponseConfig("Print job accepted."),
+      [status.BAD_REQUEST]: createErrorResponseConfig("Invalid request."),
+      [status.UNAUTHORIZED]: createErrorResponseConfig("Unauthorized."),
+      [status.UNSUPPORTED_MEDIA_TYPE]: createErrorResponseConfig(
+        "Unsupported content type.",
+      ),
+      [status.INTERNAL_SERVER_ERROR]: createErrorResponseConfig(
+        "Render or print failure.",
+      ),
+    },
+    security: [
+      {
+        Bearer: [],
+      },
+    ],
+  });
+
+  app.use(
+    route.getRoutingPath(),
+    auth(config.apiToken),
+    requireJsonContentType(),
+  );
+
+  app.openapi(route, async (c) => {
+    const request = c.req.valid("json");
+    let data: Uint8Array;
+
+    // Render the print job to raw data.
+    try {
+      data = await renderPrintJob(request.blocks, {
+        type: config.printerType,
+        width: config.printerWidth,
+        characterSet: config.printerCharacterSet,
+      });
+    } catch (error) {
+      throw new ApiError(
+        status.INTERNAL_SERVER_ERROR,
+        "Failed to render print job.",
+        {
+          cause: error,
+        },
+      );
+    }
+
+    // Send the rendered print job to the printer.
+    try {
+      await transport.print(data);
+    } catch (error) {
+      if (error instanceof PrintError) {
+        if (error.stderr !== undefined && error.stderr.length > 0) {
+          console.error("CUPS print error:", error.stderr);
+        }
+      }
+
+      throw new ApiError(status.INTERNAL_SERVER_ERROR, "Failed to print job.", {
+        cause: error,
+      });
+    }
+
+    return c.json({ ok: true }, status.OK);
+  });
+};
