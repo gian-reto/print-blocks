@@ -4,10 +4,16 @@ import type {
   PrintTemplateSummary,
 } from "./types";
 
+import { printTemplate as dailyWeatherForecastTemplate } from "./daily-weather-forecast";
+import { printTemplate as monthlySiteEnergyTemplate } from "./monthly-site-energy";
 import { printTemplate as receiptTemplate } from "./receipt";
 import { unreachable } from "../../util/unreachable";
 
-export const printTemplates = [receiptTemplate];
+export const printTemplates = [
+  dailyWeatherForecastTemplate,
+  monthlySiteEnergyTemplate,
+  receiptTemplate,
+];
 
 /**
  * Returns summaries of all available print templates, which can be used for
@@ -21,6 +27,10 @@ export const getPrintTemplateSummaries = (): PrintTemplateSummary[] =>
 
 const getPrintTemplate = (id: (typeof printTemplates)[number]["id"]) => {
   switch (id) {
+    case dailyWeatherForecastTemplate.id:
+      return dailyWeatherForecastTemplate;
+    case monthlySiteEnergyTemplate.id:
+      return monthlySiteEnergyTemplate;
     case receiptTemplate.id:
       return receiptTemplate;
     default:
