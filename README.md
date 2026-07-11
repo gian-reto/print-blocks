@@ -11,6 +11,7 @@ The service has no UI. It exposes:
 - `GET /openapi.json` for generated OpenAPI JSON.
 - `GET /docs` for an interactive Scalar API reference when `EXPOSE_DOCS=true`.
 - `GET /llms.txt` for LLM-friendly Markdown API documentation when `EXPOSE_LLMS_TXT=true`.
+- `ALL /mcp` for authenticated MCP clients when `EXPOSE_MCP=true`.
 
 ## Requirements
 
@@ -30,6 +31,8 @@ cp .env.example .env
 ```
 
 Documentation endpoints are disabled by default. Set `EXPOSE_DOCS=true` to enable `/docs` and `EXPOSE_LLMS_TXT=true` to enable `/llms.txt`.
+
+The MCP endpoint is disabled by default. Set `EXPOSE_MCP=true` and provide a separate `MCP_TOKEN` with at least 32 characters to enable `/mcp`.
 
 ## Development
 
@@ -110,6 +113,17 @@ Returns an interactive API reference backed by Scalar and `/openapi.json`. This 
 ### `GET /llms.txt`
 
 Returns Markdown API documentation generated from the OpenAPI specification. This endpoint is only registered when `EXPOSE_LLMS_TXT=true`.
+
+### `ALL /mcp`
+
+Serves a stateless MCP server over streamable HTTP. This endpoint is only registered when `EXPOSE_MCP=true` and requires `Authorization: Bearer <MCP_TOKEN>`.
+
+Available tools:
+
+- `get_info` returns printer settings, service limits, supported blocks, and templates.
+- `print` renders print instructions and submits them to the configured printer.
+- `list_templates` lists examplary print templates that can be used as starting points or inspiration for print requests.
+- `get_template` returns Markdown instructions and the template's JSON structure for a given template id.
 
 ## Manual smoke test
 

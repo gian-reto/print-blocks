@@ -8,11 +8,11 @@ import {
   createErrorResponseConfig,
   createJsonResponseConfig,
 } from "../http/response";
-import { renderPrintJob } from "../render/render-print-job";
 import type { PrintTransport } from "../print/types";
 import { bodyLimit } from "hono/body-limit";
 import status from "http-status";
 import { PrintError } from "../print/error";
+import { renderPrintRequest } from "../print/print-job";
 
 type RegisterPrintRouteOptions = {
   config: AppConfig;
@@ -80,11 +80,7 @@ export const registerPrintRoute = (
 
     // Render the print job to raw data.
     try {
-      data = await renderPrintJob(request.blocks, {
-        type: config.printerType,
-        width: config.printerWidth,
-        characterSet: config.printerCharacterSet,
-      });
+      data = await renderPrintRequest(request.blocks, config);
     } catch (error) {
       throw new ApiError(
         status.INTERNAL_SERVER_ERROR,

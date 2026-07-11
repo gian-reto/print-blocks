@@ -18,6 +18,8 @@ const config: AppConfig = {
   apiToken,
   exposeDocs: true,
   exposeLlmsTxt: true,
+  exposeMcp: false,
+  mcpToken: undefined,
   maxRequestBodyBytes: 10 * 1024 * 1024,
   maxBlocksPerPrintJob: 50,
   maxTextCharsPerBlock: 5_000,

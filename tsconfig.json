@@ -7,10 +7,11 @@
     "moduleResolution": "Bundler",
     "noEmit": true,
     "noUncheckedIndexedAccess": true,
+    "resolveJsonModule": true,
     "skipLibCheck": true,
     "strict": true,
     "target": "ES2024",
-    "types": ["node"],
+    "types": ["node", "vite/client"],
     "verbatimModuleSyntax": true
   },
   "include": ["src", "eslint.config.js", "vite.config.ts"]

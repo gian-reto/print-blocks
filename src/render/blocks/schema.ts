@@ -6,6 +6,7 @@ import { createLineBlockSchema, type LineBlock } from "./line/schema";
 import { createQrCodeBlockSchema, type QrCodeBlock } from "./qrcode/schema";
 import { createRowBlockSchema, type RowBlock } from "./row/schema";
 import { createTextBlockSchema, type TextBlock } from "./text/schema";
+import { packageInfo } from "../../util/package-info";
 
 export const createPrintBlockSchema = (maxTextCharsPerBlock: number) =>
   z.discriminatedUnion("type", [
@@ -73,7 +74,7 @@ export const createPrintRequestSchema = (options: {
             },
             {
               type: "text",
-              content: "Hello from print-blocks",
+              content: `Hello from ${packageInfo.name}`,
               align: "center",
               bold: true,
             },

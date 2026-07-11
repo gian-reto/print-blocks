@@ -2,12 +2,13 @@ import type { OpenAPIHono } from "@hono/zod-openapi";
 import { Scalar } from "@scalar/hono-api-reference";
 import type { AppConfig } from "../config";
 import { createMarkdownFromOpenApi } from "@scalar/openapi-to-markdown";
+import { packageInfo } from "../util/package-info";
 
 const createOpenApiDocumentConfig = (origin: string) => ({
   openapi: "3.0.0",
   info: {
     title: "Print Blocks API",
-    version: "0.1.0",
+    version: packageInfo.version,
   },
   servers: [
     {

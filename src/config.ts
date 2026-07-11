@@ -63,6 +63,8 @@ export type AppConfig = {
   apiToken: string;
   exposeDocs: boolean;
   exposeLlmsTxt: boolean;
+  exposeMcp: boolean;
+  mcpToken: string | undefined;
   maxRequestBodyBytes: number;
   maxBlocksPerPrintJob: number;
   maxTextCharsPerBlock: number;
@@ -138,9 +140,33 @@ const envSchema = z
     API_TOKEN: z.string().min(32),
     EXPOSE_DOCS: booleanFromEnv(false),
     EXPOSE_LLMS_TXT: booleanFromEnv(false),
+    EXPOSE_MCP: booleanFromEnv(false),
+    MCP_TOKEN: optionalStringFromEnv,
     MAX_BLOCKS_PER_PRINT_JOB: integerFromEnv(50),
     MAX_REQUEST_BODY_BYTES: integerFromEnv(10 * 1024 * 1024),
     MAX_TEXT_CHARS_PER_BLOCK: integerFromEnv(5_000),
+  })
+  .superRefine((env, ctx) => {
+    if (!env.EXPOSE_MCP) {
+      return;
+    }
+
+    if (env.MCP_TOKEN === undefined) {
+      ctx.addIssue({
+        code: "custom",
+        message: "MCP_TOKEN is required when EXPOSE_MCP is enabled.",
+        path: ["MCP_TOKEN"],
+      });
+      return;
+    }
+
+    if (env.MCP_TOKEN.length < 32) {
+      ctx.addIssue({
+        code: "custom",
+        message: "MCP_TOKEN must contain at least 32 characters.",
+        path: ["MCP_TOKEN"],
+      });
+    }
   })
   .passthrough();
 
@@ -162,6 +188,8 @@ export const loadConfig = (env: NodeJS.ProcessEnv = process.env): AppConfig => {
     apiToken: parsedEnv.API_TOKEN,
     exposeDocs: parsedEnv.EXPOSE_DOCS,
     exposeLlmsTxt: parsedEnv.EXPOSE_LLMS_TXT,
+    exposeMcp: parsedEnv.EXPOSE_MCP,
+    mcpToken: parsedEnv.MCP_TOKEN,
     maxBlocksPerPrintJob: parsedEnv.MAX_BLOCKS_PER_PRINT_JOB,
     maxRequestBodyBytes: parsedEnv.MAX_REQUEST_BODY_BYTES,
     maxTextCharsPerBlock: parsedEnv.MAX_TEXT_CHARS_PER_BLOCK,

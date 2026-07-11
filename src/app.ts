@@ -1,5 +1,6 @@
 import {
   registerHealthRoute,
+  registerMcpRoute,
   registerOpenApiRoute,
   registerPrintRoute,
 } from "./routes";
@@ -67,6 +68,11 @@ export const createApp = ({
   });
   registerHealthRoute(app);
   registerOpenApiRoute(app, config);
+  registerMcpRoute(app, {
+    config,
+    printRequestSchema,
+    transport,
+  });
 
   app.onError((error, c) => {
     console.error(error);

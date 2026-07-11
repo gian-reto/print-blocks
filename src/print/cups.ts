@@ -1,5 +1,6 @@
 import { PrintError } from "./error";
 import type { PrintTransport } from "./types";
+import { packageInfo } from "../util/package-info";
 import { randomUUID } from "node:crypto";
 import { spawn } from "node:child_process";
 
@@ -31,7 +32,7 @@ const submitPrintJob = (
       "-o",
       "raw",
       "-t",
-      options.jobTitle ?? `print-blocks-${randomUUID()}`,
+      options.jobTitle ?? `${packageInfo.name}-${randomUUID()}`,
       "-",
     ];
     const child = spawn("lp", args, {

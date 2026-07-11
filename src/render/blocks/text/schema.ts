@@ -1,3 +1,4 @@
+import { packageInfo } from "../../../util/package-info";
 import { z } from "@hono/zod-openapi";
 
 export const alignSchema = z.enum(["left", "center", "right"]).openapi({
@@ -28,9 +29,13 @@ export const createTextBlockSchema = (maxTextCharsPerBlock: number) =>
     .object({
       // Block config.
       type: z.literal("text").openapi({ example: "text" }),
-      content: z.string().min(1).max(maxTextCharsPerBlock).openapi({
-        example: "Hello from print-blocks",
-      }),
+      content: z
+        .string()
+        .min(1)
+        .max(maxTextCharsPerBlock)
+        .openapi({
+          example: `Hello from ${packageInfo.name}`,
+        }),
 
       // Component options.
       align: alignSchema.optional(),

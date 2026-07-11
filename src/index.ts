@@ -1,6 +1,8 @@
-import { serve } from "@hono/node-server";
-import { createApp } from "./app";
 import { loadConfig, loadEnvFile } from "./config";
+
+import { createApp } from "./app";
+import { packageInfo } from "./util/package-info";
+import { serve } from "@hono/node-server";
 
 loadEnvFile();
 
@@ -15,7 +17,7 @@ const server = serve(
   },
   (info) => {
     console.info(
-      `print-blocks listening on http://${info.address}:${info.port}`,
+      `${packageInfo.name} (v${packageInfo.version}) listening on http://${info.address}:${info.port}`,
     );
   },
 );
