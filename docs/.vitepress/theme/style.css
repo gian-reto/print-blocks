@@ -1,0 +1,82 @@
+@media (min-width: 960px) {
+  .VPHero .image-container {
+    width: 520px;
+    height: 420px;
+  }
+
+  .VPHero .VPImage {
+    max-width: 520px;
+    max-height: 420px;
+  }
+}
+
+.block-example {
+  margin: 16px 0;
+  padding: 16px;
+  overflow-x: auto;
+  border-radius: 8px;
+  background: var(--vp-code-block-bg);
+  color: var(--vp-code-block-color);
+  font-size: var(--vp-code-font-size);
+  line-height: var(--vp-code-line-height);
+}
+
+.schema-fields {
+  overflow-x: auto;
+}
+
+.schema-fields table {
+  display: table;
+  width: 100%;
+}
+
+.schema-fields th:first-child {
+  min-width: 140px;
+}
+
+.schema-fields th:nth-child(2) {
+  min-width: 140px;
+}
+
+.schema-fields p {
+  margin: 0;
+}
+
+.field-requirement {
+  display: block;
+  margin-top: 4px;
+  color: var(--vp-c-text-3);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.field-requirement.required {
+  color: var(--vp-c-brand-1);
+}
+
+.field-details {
+  margin: 4px 0 0;
+  padding-left: 18px;
+  color: var(--vp-c-text-2);
+  font-size: 13px;
+}
+
+.schema-fields details {
+  margin-top: 8px;
+}
+
+.schema-fields summary {
+  cursor: pointer;
+  color: var(--vp-c-brand-1);
+  font-weight: 500;
+}
+
+.schema-variant {
+  margin-top: 24px;
+}
+
+.schema-variant.nested {
+  margin-top: 16px;
+}

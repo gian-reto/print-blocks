@@ -14,8 +14,12 @@ export const createAreaChartBlockSchema = (maxTextCharsPerBlock: number) =>
   z
     .object({
       // Block config.
-      type: z.literal("areaChart").openapi({ example: "areaChart" }),
+      type: z.literal("areaChart").openapi({
+        description: "Discriminator for area-chart blocks.",
+        example: "areaChart",
+      }),
       series: createChartSeriesSchema(maxTextCharsPerBlock).openapi({
+        description: "Series plotted as a filled area.",
         example: { label: "Temperature", values: [18, 20, 23, 21] },
       }),
       xLabels: createChartXAxisLabelsSchema(maxTextCharsPerBlock),

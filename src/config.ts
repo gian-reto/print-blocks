@@ -82,6 +82,12 @@ export type AppConfig = {
   remoteImageTimeoutMs: number;
 };
 
+export const defaultPrintRequestSchemaOptions = {
+  allowRemoteImageUrls: false,
+  maxBlocksPerPrintJob: 50,
+  maxTextCharsPerBlock: 5_000,
+} as const;
+
 const emptyStringToUndefined = (value: unknown) =>
   value === "" ? undefined : value;
 
@@ -162,12 +168,18 @@ const envSchema = z
     MCP_TOKEN: optionalStringFromEnv,
 
     // Limits and features
-    ALLOW_REMOTE_IMAGE_URLS: booleanFromEnv(false),
-    MAX_BLOCKS_PER_PRINT_JOB: integerFromEnv(50),
+    ALLOW_REMOTE_IMAGE_URLS: booleanFromEnv(
+      defaultPrintRequestSchemaOptions.allowRemoteImageUrls,
+    ),
+    MAX_BLOCKS_PER_PRINT_JOB: integerFromEnv(
+      defaultPrintRequestSchemaOptions.maxBlocksPerPrintJob,
+    ),
     MAX_IMAGE_INPUT_PIXELS: integerFromEnv(25_000_000),
     MAX_REMOTE_IMAGE_BYTES: integerFromEnv(5 * 1024 * 1024),
     MAX_REQUEST_BODY_BYTES: integerFromEnv(10 * 1024 * 1024),
-    MAX_TEXT_CHARS_PER_BLOCK: integerFromEnv(5_000),
+    MAX_TEXT_CHARS_PER_BLOCK: integerFromEnv(
+      defaultPrintRequestSchemaOptions.maxTextCharsPerBlock,
+    ),
     REMOTE_IMAGE_TIMEOUT_MS: integerFromEnv(5_000),
   })
   .superRefine((env, ctx) => {

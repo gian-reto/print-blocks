@@ -42,7 +42,7 @@ export const createImageBlockSchema = ({
       }),
       data: z.base64().min(1).optional().openapi({
         description:
-          "Base64-encoded image data. Provide exactly one of data or url. Sharp must be able to decode the image format.",
+          "Base64-encoded JPEG, PNG, WebP, or SVG data. Provide exactly one of data or url.",
         example:
           "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
       }),

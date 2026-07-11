@@ -2,9 +2,13 @@ import { z } from "@hono/zod-openapi";
 
 export const maxProgressSteps = 32;
 
-const progressValueSchema = z.number().min(0).openapi({ example: 67 });
+const progressValueSchema = z.number().min(0).openapi({
+  description: "Current progress value. Must not exceed max.",
+  example: 67,
+});
 
 const progressMaxSchema = z.number().positive().openapi({
+  description: "Positive value representing complete progress.",
   example: 100,
 });
 
@@ -13,11 +17,15 @@ const progressStepsSchema = z
   .int()
   .min(1)
   .max(maxProgressSteps)
-  .openapi({ example: 10 });
+  .openapi({
+    description: "Number of shapes in a stepped indicator.",
+    example: 10,
+  });
 
-const progressStepStyleSchema = z
-  .enum(["squares", "circles"])
-  .openapi({ example: "circles" });
+const progressStepStyleSchema = z.enum(["squares", "circles"]).openapi({
+  description: "Shape used by a stepped indicator.",
+  example: "circles",
+});
 
 type ProgressValueBounds = {
   max: number;
@@ -41,7 +49,10 @@ const validateProgressValueBounds = (
 
 const progressBaseSchema = z.object({
   // Block config.
-  type: z.literal("progress").openapi({ example: "progress" }),
+  type: z.literal("progress").openapi({
+    description: "Discriminator for progress blocks.",
+    example: "progress",
+  }),
   max: progressMaxSchema,
   value: progressValueSchema,
 });

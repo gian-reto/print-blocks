@@ -17,12 +17,16 @@ export const createLineChartBlockSchema = (maxTextCharsPerBlock: number) =>
   z
     .object({
       // Block config.
-      type: z.literal("lineChart").openapi({ example: "lineChart" }),
+      type: z.literal("lineChart").openapi({
+        description: "Discriminator for line-chart blocks.",
+        example: "lineChart",
+      }),
       series: z
         .array(createChartSeriesSchema(maxTextCharsPerBlock))
         .min(1)
         .max(maxChartSeries)
         .openapi({
+          description: "One to four series plotted as separate lines.",
           example: [
             { label: "API", values: [120, 140, 110, 180] },
             { label: "DB", values: [80, 90, 95, 130] },

@@ -14,5 +14,10 @@
     "types": ["node", "vite/client"],
     "verbatimModuleSyntax": true
   },
-  "include": ["src", "eslint.config.js", "vite.config.ts"]
+  "include": [
+    "docs/.vitepress/**/*.ts",
+    "eslint.config.js",
+    "src",
+    "vite.config.ts"
+  ]
 }

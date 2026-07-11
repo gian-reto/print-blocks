@@ -60,17 +60,25 @@ export const createHeatmapBlockSchema = (_maxTextCharsPerBlock: number) =>
   z
     .object({
       // Block config.
-      type: z.literal("heatmap").openapi({ example: "heatmap" }),
+      type: z.literal("heatmap").openapi({
+        description: "Discriminator for heatmap blocks.",
+        example: "heatmap",
+      }),
       labels: z
         .array(z.string().max(maxHeatmapLabelChars).openapi({ example: "Mon" }))
         .min(1)
         .max(maxHeatmapColumns)
-        .openapi({ example: ["Mon", "Tue", "Wed"] }),
+        .openapi({
+          description: "Labels for the heatmap columns.",
+          example: ["Mon", "Tue", "Wed"],
+        }),
       values: z
         .array(heatmapRowSchema)
         .min(1)
         .max(maxHeatmapRows)
         .openapi({
+          description:
+            "Rows of non-negative values. Rows must have equal lengths and 1 to 31 values each; the complete heatmap may contain at most 256 cells. Use null for a blank cell.",
           example: [
             [null, 3, 1],
             [0, 3, 2],

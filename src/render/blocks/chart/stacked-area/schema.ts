@@ -17,9 +17,10 @@ export const createStackedAreaChartBlockSchema = (
   z
     .object({
       // Block config.
-      type: z
-        .literal("stackedAreaChart")
-        .openapi({ example: "stackedAreaChart" }),
+      type: z.literal("stackedAreaChart").openapi({
+        description: "Discriminator for stacked-area-chart blocks.",
+        example: "stackedAreaChart",
+      }),
       series: z
         .array(
           createChartSeriesSchema(
@@ -30,13 +31,17 @@ export const createStackedAreaChartBlockSchema = (
         .min(2)
         .max(maxChartSeries)
         .openapi({
+          description: "Two to four non-negative series stacked by x value.",
           example: [
             { label: "Solar", values: [5, 8, 7, 6] },
             { label: "Grid", values: [4, 3, 6, 5] },
           ],
         }),
       xLabels: createChartXAxisLabelsSchema(maxTextCharsPerBlock),
-      yMax: nonNegativeChartValueSchema.optional().openapi({ example: 100 }),
+      yMax: nonNegativeChartValueSchema.optional().openapi({
+        description: "Optional upper bound for stacked totals.",
+        example: 100,
+      }),
     })
     .strip()
     .superRefine((block, ctx) => {

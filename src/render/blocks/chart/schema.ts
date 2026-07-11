@@ -22,6 +22,7 @@ const nonBlankText = (message: string) =>
   });
 
 export const chartValueSchema = z.number().finite().openapi({
+  description: "Finite numeric chart value.",
   example: 42,
 });
 
@@ -33,6 +34,7 @@ export const createChartLabelSchema = (maxTextCharsPerBlock: number) =>
   nonBlankText("Chart label must not be blank.")
     .max(Math.min(maxTextCharsPerBlock, maxChartLabelChars))
     .openapi({
+      description: "Short chart label.",
       example: "Mon",
     });
 
@@ -48,6 +50,7 @@ export const createChartSeriesSchema = (
         .min(minChartPoints)
         .max(maxChartPoints)
         .openapi({
+          description: "Values in this series, ordered along the x-axis.",
           example: [12, 19, 14, 22],
         }),
     })
@@ -66,10 +69,12 @@ export const createChartXAxisLabelsSchema = (maxTextCharsPerBlock: number) =>
     });
 
 export const yMinSchema = chartValueSchema.optional().openapi({
+  description: "Optional lower bound for the y-axis.",
   example: 0,
 });
 
 export const yMaxSchema = chartValueSchema.optional().openapi({
+  description: "Optional upper bound for the y-axis.",
   example: 100,
 });
 

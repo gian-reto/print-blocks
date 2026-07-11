@@ -59,7 +59,7 @@ export const createBarcodeBlockSchema = () =>
         })
         .openapi({
           description:
-            "Data to encode in the barcode. Allowed characters and length depend on the selected format.",
+            "Data to encode in the barcode. Must be at most 256 bytes after CP437 encoding; other character and length rules depend on the selected format.",
           example: "{B1234567890",
         }),
       align: z.enum(["left", "center", "right"]).optional().openapi({

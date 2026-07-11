@@ -14,10 +14,16 @@ const timelineItemSchema = z
   .object({
     label: nonBlankString("Timeline label must not be blank.")
       .max(maxTimelineLabelChars)
-      .openapi({ example: "09:00" }),
+      .openapi({
+        description: "Short event label, such as a time or date.",
+        example: "09:00",
+      }),
     description: nonBlankString("Timeline description must not be blank.")
       .max(maxTimelineDescriptionChars)
-      .openapi({ example: "Build started" }),
+      .openapi({
+        description: "Event description.",
+        example: "Build started",
+      }),
   })
   .strip();
 
@@ -25,12 +31,16 @@ export const createTimelineBlockSchema = (_maxTextCharsPerBlock: number) =>
   z
     .object({
       // Block config.
-      type: z.literal("timeline").openapi({ example: "timeline" }),
+      type: z.literal("timeline").openapi({
+        description: "Discriminator for timeline blocks.",
+        example: "timeline",
+      }),
       items: z
         .array(timelineItemSchema)
         .min(minTimelineItems)
         .max(maxTimelineItems)
         .openapi({
+          description: "Ordered timeline events.",
           example: [
             { label: "09:00", description: "Build started" },
             { label: "09:04", description: "Tests passed" },

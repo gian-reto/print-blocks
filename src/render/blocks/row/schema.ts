@@ -13,11 +13,28 @@ export const createRowBlockSchema = (maxTextCharsPerBlock: number) => {
 
   return z
     .object({
-      type: z.literal("row").openapi({ example: "row" }),
-      left: rowTextCellSchema,
-      center: rowTextCellSchema.optional(),
-      right: rowTextCellSchema,
-      gap: z.number().int().min(0).openapi({ example: 1 }).optional(),
+      type: z.literal("row").openapi({
+        description: "Discriminator for row blocks.",
+        example: "row",
+      }),
+      left: rowTextCellSchema.openapi({
+        description: "Text cell aligned to the left edge.",
+      }),
+      center: rowTextCellSchema.optional().openapi({
+        description: "Optional text cell centered between the outer cells.",
+      }),
+      right: rowTextCellSchema.openapi({
+        description: "Text cell aligned to the right edge.",
+      }),
+      gap: z
+        .number()
+        .int()
+        .min(0)
+        .openapi({
+          description: "Minimum gap between row cells, in characters.",
+          example: 1,
+        })
+        .optional(),
     })
     .strip()
     .openapi("RowBlock");
