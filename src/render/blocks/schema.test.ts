@@ -52,6 +52,28 @@ describe("print request schema", () => {
     });
   });
 
+  it("accepts row blocks", () => {
+    const result = createSchema().parse({
+      blocks: [
+        {
+          type: "row",
+          left: { content: "Item" },
+          right: { content: "1.00", bold: true },
+        },
+      ],
+    });
+
+    expect(result).toEqual({
+      blocks: [
+        {
+          type: "row",
+          left: { content: "Item" },
+          right: { content: "1.00", bold: true },
+        },
+      ],
+    });
+  });
+
   it("rejects empty block arrays", () => {
     const result = createSchema().safeParse({ blocks: [] });
 

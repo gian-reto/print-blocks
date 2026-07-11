@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { Br, Cut, Line, Printer, render, Text } from "react-thermal-printer";
+import {
+  Br,
+  Cut,
+  Line,
+  Printer,
+  render,
+  Row,
+  Text,
+} from "react-thermal-printer";
 import type { ReactNode } from "react";
 import { renderPrintJob, type PrinterRenderOptions } from "./render-print-job";
 import type { PrintBlock } from "./blocks/schema";
@@ -39,5 +47,27 @@ describe("renderPrintJob", () => {
     const blocks: PrintBlock[] = [{ type: "line", character: "=" }];
 
     await expectRender(blocks, <Line character="=" />);
+  });
+
+  it("renders row blocks", async () => {
+    const blocks: PrintBlock[] = [
+      {
+        type: "row",
+        left: { content: "Item", bold: true },
+        center: { content: "x2" },
+        right: { content: "1.00", size: { width: 2, height: 1 } },
+        gap: 1,
+      },
+    ];
+
+    await expectRender(
+      blocks,
+      <Row
+        left={<Text bold>Item</Text>}
+        center={<Text>x2</Text>}
+        right={<Text size={{ width: 2, height: 1 }}>1.00</Text>}
+        gap={1}
+      />,
+    );
   });
 });
