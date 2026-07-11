@@ -59,6 +59,7 @@ export type AppConfig = {
 
   // Printer
   printerCharacterSet: CharacterSet;
+  printerDotWidth: number;
   printerName: string | undefined;
   printerType: PrinterType;
   printerWidth: number;
@@ -145,6 +146,7 @@ const envSchema = z
       (value) => emptyStringToUndefined(value) ?? "pc437_usa",
       z.enum(printerCharacterSetValues),
     ),
+    PRINTER_DOT_WIDTH: integerFromEnv(576),
     PRINTER_NAME: optionalStringFromEnv,
     PRINTER_TYPE: z.preprocess(
       (value) => emptyStringToUndefined(value) ?? "epson",
@@ -206,6 +208,7 @@ export const loadConfig = (env: NodeJS.ProcessEnv = process.env): AppConfig => {
 
     // Printer
     printerCharacterSet: parsedEnv.PRINTER_CHARACTER_SET,
+    printerDotWidth: parsedEnv.PRINTER_DOT_WIDTH,
     printerName: parsedEnv.PRINTER_NAME,
     printerType: parsedEnv.PRINTER_TYPE,
     printerWidth: parsedEnv.PRINTER_WIDTH,

@@ -46,6 +46,7 @@ export const registerGetInfoTool = (server: McpServer, config: AppConfig) => {
           name: config.printerName ?? null,
           type: config.printerType,
           width: config.printerWidth,
+          dotWidth: config.printerDotWidth,
           characterSet: config.printerCharacterSet,
         },
         limits: {

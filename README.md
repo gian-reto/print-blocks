@@ -34,6 +34,7 @@ Note:
 
 - Documentation endpoints are disabled by default. Set `EXPOSE_DOCS=true` to enable `/docs` and `EXPOSE_LLMS_TXT=true` to enable `/llms.txt`.
 - The MCP endpoint is disabled by default. Set `EXPOSE_MCP=true` and provide a separate `MCP_TOKEN` with at least 32 characters to enable `/mcp`.
+- `PRINTER_WIDTH` configures the printer text width in characters and defaults to `48`. `PRINTER_DOT_WIDTH` configures the raster width used for image-like blocks and defaults to `576` dots. Set it explicitly when your printer mode uses a different raster width, such as `384` dots.
 - Image blocks accept base64-encoded data through the `data` property. Supported image formats are JPEG, PNG, WebP, and SVG. Remote image URLs are disabled by default. Set `ALLOW_REMOTE_IMAGE_URLS=true` to allow image blocks to use an HTTPS `url` instead. Remote image fetching is intentionally strict: only HTTPS URLs with public domain hostnames are accepted, direct IP addresses and credentials are rejected, redirects are not followed, downloaded bytes are limited by `MAX_REMOTE_IMAGE_BYTES`, fetches time out after `REMOTE_IMAGE_TIMEOUT_MS`, and decoded image input is limited by `MAX_IMAGE_INPUT_PIXELS`. These restrictions are in place to prevent abuse and security issues, but enabling remote image URLs is only recommended in trusted environments.
 
 ## Development
@@ -48,6 +49,12 @@ Run the dev server:
 
 ```sh
 pnpm dev
+```
+
+SVG-backed block previews are available in development at:
+
+```txt
+http://localhost:3000/preview
 ```
 
 Run checks:

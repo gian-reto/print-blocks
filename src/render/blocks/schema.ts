@@ -6,6 +6,7 @@ import { createLineBlockSchema, type LineBlock } from "./line/schema";
 import { createQrCodeBlockSchema, type QrCodeBlock } from "./qrcode/schema";
 import { createRowBlockSchema, type RowBlock } from "./row/schema";
 import { createTextBlockSchema, type TextBlock } from "./text/schema";
+import { createTokenBlockSchema, type TokenBlock } from "./token/schema";
 import { packageInfo } from "../../util/package-info";
 
 type CreatePrintBlockSchemaOptions = {
@@ -26,6 +27,7 @@ export const createPrintBlockSchema = (
     createQrCodeBlockSchema(),
     createRowBlockSchema(options.maxTextCharsPerBlock),
     createTextBlockSchema(options.maxTextCharsPerBlock),
+    createTokenBlockSchema(options.maxTextCharsPerBlock),
   ]);
 
 export type PrintBlock =
@@ -35,7 +37,8 @@ export type PrintBlock =
   | LineBlock
   | QrCodeBlock
   | RowBlock
-  | TextBlock;
+  | TextBlock
+  | TokenBlock;
 
 export const createPrintRequestSchema = (options: {
   allowRemoteImageUrls: boolean;
@@ -93,6 +96,11 @@ export const createPrintRequestSchema = (options: {
               content: `Hello from ${packageInfo.name}`,
               align: "center",
               bold: true,
+            },
+            {
+              type: "token",
+              title: "Coupon code",
+              content: "LOREM IPSUM",
             },
           ],
         }),

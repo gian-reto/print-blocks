@@ -37,6 +37,7 @@
     "react-dom": "^19.2.6",
     "react-thermal-printer": "^0.22.0",
     "remeda": "^2.37.0",
+    "satori": "^0.26.0",
     "sharp": "^0.34.5",
     "zod": "^4.4.3"
   },

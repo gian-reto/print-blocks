@@ -9,6 +9,7 @@ export const renderPrintRequest = async (
   await renderPrintJob(blocks, {
     type: config.printerType,
     width: config.printerWidth,
+    printerDotWidth: config.printerDotWidth,
     characterSet: config.printerCharacterSet,
     imageSource: {
       maxImageInputPixels: config.maxImageInputPixels,

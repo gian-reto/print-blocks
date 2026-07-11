@@ -8,7 +8,7 @@ const createSchema = () =>
   createPrintRequestSchema({
     allowRemoteImageUrls: false,
     maxBlocksPerPrintJob: 2,
-    maxTextCharsPerBlock: 5,
+    maxTextCharsPerBlock: 11,
   });
 
 describe("print request schema", () => {
@@ -125,6 +125,28 @@ describe("print request schema", () => {
           type: "row",
           left: { content: "Item" },
           right: { content: "1.00", bold: true },
+        },
+      ],
+    });
+  });
+
+  it("accepts token blocks", () => {
+    const result = createSchema().parse({
+      blocks: [
+        {
+          type: "token",
+          title: "Code",
+          content: "LOREM IPSUM",
+        },
+      ],
+    });
+
+    expect(result).toEqual({
+      blocks: [
+        {
+          type: "token",
+          title: "Code",
+          content: "LOREM IPSUM",
         },
       ],
     });

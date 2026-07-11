@@ -2,6 +2,7 @@ import {
   registerHealthRoute,
   registerMcpRoute,
   registerOpenApiRoute,
+  registerPreviewRoute,
   registerPrintRoute,
 } from "./routes";
 
@@ -74,6 +75,9 @@ export const createApp = ({
     printRequestSchema,
     transport,
   });
+  if (import.meta.env.DEV) {
+    registerPreviewRoute(app, { config });
+  }
 
   app.onError((error, c) => {
     console.error(error);

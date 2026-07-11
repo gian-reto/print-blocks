@@ -6,7 +6,9 @@ const apiToken = "12345678901234567890123456789012";
 
 describe("loadConfig", () => {
   it("applies defaults around required API_TOKEN", () => {
-    const config = loadConfig({ API_TOKEN: apiToken });
+    const config = loadConfig({
+      API_TOKEN: apiToken,
+    });
 
     expect(config).toMatchObject({
       host: "0.0.0.0",
@@ -14,6 +16,7 @@ describe("loadConfig", () => {
       printerName: undefined,
       printerType: "epson",
       printerWidth: 48,
+      printerDotWidth: 576,
       printerCharacterSet: "pc437_usa",
       printTimeoutMs: 15_000,
       allowRemoteImageUrls: false,
@@ -31,6 +34,7 @@ describe("loadConfig", () => {
       API_TOKEN: apiToken,
       PORT: "8787",
       PRINTER_WIDTH: "42",
+      PRINTER_DOT_WIDTH: "384",
       PRINT_TIMEOUT_MS: "5000",
       MAX_BLOCKS_PER_PRINT_JOB: "10",
       MAX_REQUEST_BODY_BYTES: "2048",
@@ -43,6 +47,7 @@ describe("loadConfig", () => {
     expect(config).toMatchObject({
       port: 8787,
       printerWidth: 42,
+      printerDotWidth: 384,
       printTimeoutMs: 5_000,
       maxRequestBodyBytes: 2048,
       maxBlocksPerPrintJob: 10,

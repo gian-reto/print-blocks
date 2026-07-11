@@ -8,6 +8,7 @@ import { supportedImageFormats } from "./blocks/image";
 const options: PrinterRenderOptions = {
   type: "epson",
   width: 48,
+  printerDotWidth: 576,
   characterSet: "pc437_usa",
   imageSource: {
     maxImageInputPixels: 25_000_000,
@@ -63,6 +64,11 @@ describe("renderPrintJob", () => {
           gap: 1,
         },
         { type: "text", content: "Hello", align: "center" },
+        {
+          type: "token",
+          title: "Code",
+          content: "LOREM IPSUM",
+        },
       ],
     });
 

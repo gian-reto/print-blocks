@@ -7,6 +7,7 @@ import { renderLineBlock } from "./line";
 import { renderQrCodeBlock } from "./qrcode";
 import { renderRowBlock } from "./row";
 import { renderTextBlock } from "./text";
+import { renderTokenBlock } from "./token";
 import { unreachable } from "../../util/unreachable";
 
 export const renderBlock = (block: PrintBlock, context: BlockRenderContext) => {
@@ -31,6 +32,9 @@ export const renderBlock = (block: PrintBlock, context: BlockRenderContext) => {
 
     case "text":
       return renderTextBlock(block);
+
+    case "token":
+      return renderTokenBlock(block, context);
 
     default:
       return unreachable(block, "Unknown block type");

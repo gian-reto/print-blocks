@@ -14,6 +14,7 @@ const config: AppConfig = {
 
   // Printer
   printerCharacterSet: "pc437_usa",
+  printerDotWidth: 576,
   printerName: "receipt-printer",
   printerType: "epson",
   printerWidth: 48,
