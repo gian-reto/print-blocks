@@ -84,6 +84,13 @@ describe("renderPrintJob", () => {
           style: "circles",
         },
         {
+          type: "timeline",
+          items: [
+            { label: "09:00", description: "Build started" },
+            { label: "09:04", description: "Tests passed" },
+          ],
+        },
+        {
           type: "lineChart",
           series: [
             { label: "API", values: [120, 140, 110] },

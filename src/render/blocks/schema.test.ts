@@ -248,6 +248,32 @@ describe("print request schema", () => {
     });
   });
 
+  it("accepts timeline blocks", () => {
+    const result = createSchema().parse({
+      blocks: [
+        {
+          type: "timeline",
+          items: [
+            { label: "09:00", description: "Build started" },
+            { label: "09:04", description: "Tests passed" },
+          ],
+        },
+      ],
+    });
+
+    expect(result).toEqual({
+      blocks: [
+        {
+          type: "timeline",
+          items: [
+            { label: "09:00", description: "Build started" },
+            { label: "09:04", description: "Tests passed" },
+          ],
+        },
+      ],
+    });
+  });
+
   it("rejects empty block arrays", () => {
     const result = createSchema().safeParse({ blocks: [] });
 

@@ -14,6 +14,7 @@ import { createProgressBlockSchema, type ProgressBlock } from "./progress";
 import { createQrCodeBlockSchema, type QrCodeBlock } from "./qrcode/schema";
 import { createRowBlockSchema, type RowBlock } from "./row/schema";
 import { createTextBlockSchema, type TextBlock } from "./text/schema";
+import { createTimelineBlockSchema, type TimelineBlock } from "./timeline";
 import { createTokenBlockSchema, type TokenBlock } from "./token/schema";
 import { packageInfo } from "../../util/package-info";
 
@@ -40,6 +41,7 @@ export const createPrintBlockSchema = (
     createRowBlockSchema(options.maxTextCharsPerBlock),
     createStackedAreaChartBlockSchema(options.maxTextCharsPerBlock),
     createTextBlockSchema(options.maxTextCharsPerBlock),
+    createTimelineBlockSchema(options.maxTextCharsPerBlock),
     createTokenBlockSchema(options.maxTextCharsPerBlock),
   ]);
 
@@ -56,6 +58,7 @@ export type PrintBlock =
   | RowBlock
   | StackedAreaChartBlock
   | TextBlock
+  | TimelineBlock
   | TokenBlock;
 
 export const createPrintRequestSchema = (options: {
@@ -148,6 +151,13 @@ export const createPrintRequestSchema = (options: {
               content: `Hello from ${packageInfo.name}`,
               align: "center",
               bold: true,
+            },
+            {
+              type: "timeline",
+              items: [
+                { label: "09:00", description: "Build started" },
+                { label: "09:04", description: "Tests passed" },
+              ],
             },
             {
               type: "token",

@@ -12,6 +12,7 @@ import { renderQrCodeBlock } from "./qrcode";
 import { renderRowBlock } from "./row";
 import { renderStackedAreaChartBlock } from "./chart/stacked-area";
 import { renderTextBlock } from "./text";
+import { renderTimelineBlock } from "./timeline";
 import { renderTokenBlock } from "./token";
 import { unreachable } from "../../util/unreachable";
 
@@ -52,6 +53,9 @@ export const renderBlock = (block: PrintBlock, context: BlockRenderContext) => {
 
     case "text":
       return renderTextBlock(block);
+
+    case "timeline":
+      return renderTimelineBlock(block, context);
 
     case "token":
       return renderTokenBlock(block, context);
