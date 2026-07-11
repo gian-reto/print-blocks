@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { createPrintRequestSchema } from "./schema";
 
 const createSchema = () =>
@@ -49,6 +50,16 @@ describe("print request schema", () => {
 
     expect(result).toEqual({
       blocks: [{ type: "line", character: "=" }],
+    });
+  });
+
+  it("accepts qrcode blocks", () => {
+    const result = createSchema().parse({
+      blocks: [{ type: "qrcode", content: "Hello", align: "center" }],
+    });
+
+    expect(result).toEqual({
+      blocks: [{ type: "qrcode", content: "Hello", align: "center" }],
     });
   });
 

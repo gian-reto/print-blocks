@@ -4,6 +4,7 @@ import {
   Cut,
   Line,
   Printer,
+  QRCode,
   render,
   Row,
   Text,
@@ -47,6 +48,30 @@ describe("renderPrintJob", () => {
     const blocks: PrintBlock[] = [{ type: "line", character: "=" }];
 
     await expectRender(blocks, <Line character="=" />);
+  });
+
+  it("renders qrcode blocks", async () => {
+    const blocks: PrintBlock[] = [
+      {
+        type: "qrcode",
+        content: "https://example.com",
+        align: "center",
+        model: "model2",
+        cellSize: 4,
+        correction: "M",
+      },
+    ];
+
+    await expectRender(
+      blocks,
+      <QRCode
+        content="https://example.com"
+        align="center"
+        model="model2"
+        cellSize={4}
+        correction="M"
+      />,
+    );
   });
 
   it("renders row blocks", async () => {
