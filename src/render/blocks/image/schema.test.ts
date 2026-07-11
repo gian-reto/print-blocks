@@ -28,6 +28,7 @@ describe("image block schema", () => {
       type: "image",
       data: whitePixelPngBase64,
       align: "center",
+      maxWidth: 50,
       fit: "cover",
       withoutEnlargement: false,
       transforms: ["floydSteinberg"],
@@ -38,6 +39,7 @@ describe("image block schema", () => {
       type: "image",
       data: whitePixelPngBase64,
       align: "center",
+      maxWidth: 50,
       fit: sharp.fit.cover,
       withoutEnlargement: false,
       transforms: [transforms.floydSteinberg],
@@ -68,6 +70,20 @@ describe("image block schema", () => {
       type: "image",
       data: whitePixelPngBase64,
       fit,
+    });
+  });
+
+  it.each([1, 100])("accepts image maxWidth boundary %s", (maxWidth) => {
+    const result = createSchema().parse({
+      type: "image",
+      data: whitePixelPngBase64,
+      maxWidth,
+    });
+
+    expect(result).toMatchObject({
+      type: "image",
+      data: whitePixelPngBase64,
+      maxWidth,
     });
   });
 
@@ -195,6 +211,16 @@ describe("image block schema", () => {
       type: "image",
       data: whitePixelPngBase64,
       withoutEnlargement: "false",
+    });
+
+    expect(result.success).toBe(false);
+  });
+
+  it.each([0, 101, 50.5, "50"])("rejects invalid maxWidth %s", (maxWidth) => {
+    const result = createSchema().safeParse({
+      type: "image",
+      data: whitePixelPngBase64,
+      maxWidth,
     });
 
     expect(result.success).toBe(false);

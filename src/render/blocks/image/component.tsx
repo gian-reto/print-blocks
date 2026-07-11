@@ -58,7 +58,11 @@ const createReader = (
 
       const renderedImage = await sharpImage
         .resize({
-          width: context.printerDotWidth,
+          // Use specified `block.maxWidth` as a percentage of the printer
+          // width, defaulting to 100% if not specified.
+          width: Math.round(
+            (context.printerDotWidth * (block.maxWidth ?? 100)) / 100,
+          ),
           fit: block.fit,
           withoutEnlargement: block.withoutEnlargement,
         })
@@ -97,11 +101,12 @@ export const renderImageBlock = (
 ) => {
   const props: ImageProps = {
     ...omitUndefined(
-      omit(["data", "fit", "type", "url", "withoutEnlargement"])(block),
+      omit(["data", "fit", "maxWidth", "type", "url", "withoutEnlargement"])(
+        block,
+      ),
     ),
     reader: createReader(block, context),
-    // The `Image` component requires a `src` prop, but since we're using a
-    // custom `reader`, it won't actually be used.
+    // The `Image` component requires a `src` prop, but it is unused by the custom reader.
     src: "",
   };
 

@@ -51,6 +51,11 @@ export const createImageBlockSchema = ({
         description: "Horizontal alignment of the printed image.",
         example: "center",
       }),
+      maxWidth: z.number().int().min(1).max(100).optional().openapi({
+        description:
+          "Maximum image width as a percentage of the printer paper width. Note: If `withoutEnlargement` is `false`, smaller images are upscaled to the specified width.",
+        example: 50,
+      }),
       fit: z
         .enum<readonly (keyof typeof sharp.fit)[]>(keys(sharp.fit))
         .default(sharp.fit.inside)
