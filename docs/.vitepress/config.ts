@@ -1,6 +1,7 @@
 import { defineConfig } from "vitepress";
 
 export default defineConfig({
+  base: process.env.VITEPRESS_BASE ?? "/",
   title: "print-blocks",
   description:
     "Print structured documents on ESC/POS thermal printers over HTTP or MCP.",
