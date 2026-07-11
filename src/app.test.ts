@@ -16,6 +16,7 @@ const config: AppConfig = {
   printerCharacterSet: "pc437_usa",
   printTimeoutMs: 15_000,
   apiToken,
+  maxRequestBodyBytes: 10 * 1024 * 1024,
   maxBlocksPerPrintJob: 50,
   maxTextCharsPerBlock: 5_000,
 };
@@ -138,6 +139,27 @@ describe("app", () => {
         },
       },
     });
+    expect(jobs).toHaveLength(0);
+  });
+
+  it("rejects requests that exceed the configured body size limit", async () => {
+    const { jobs, transport } = createRecordingTransport();
+    const app = createApp({
+      config: { ...config, maxRequestBodyBytes: 64 },
+      enableRequestLogging: false,
+      printTransport: transport,
+    });
+
+    const response = await app.request(
+      "/print",
+      printRequest({ blocks: [{ type: "text", content: "x".repeat(128) }] }),
+    );
+
+    await expect(response.json()).resolves.toMatchObject({
+      ok: false,
+      error: { message: "Request body must not exceed 64 bytes." },
+    });
+    expect(response.status).toBe(status.REQUEST_ENTITY_TOO_LARGE);
     expect(jobs).toHaveLength(0);
   });
 

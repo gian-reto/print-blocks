@@ -4,11 +4,13 @@ import type { PrintRequestSchema } from "../render/blocks/schema";
 import { ApiError } from "../http/error";
 import { auth, requireJsonContentType } from "../http/middleware";
 import {
+  createErrorResponseBody,
   createErrorResponseConfig,
   createJsonResponseConfig,
 } from "../http/response";
 import { renderPrintJob } from "../render/render-print-job";
 import type { PrintTransport } from "../print/types";
+import { bodyLimit } from "hono/body-limit";
 import status from "http-status";
 import { PrintError } from "../print/error";
 
@@ -38,12 +40,15 @@ export const registerPrintRoute = (
     responses: {
       [status.OK]: createJsonResponseConfig("Print job accepted."),
       [status.BAD_REQUEST]: createErrorResponseConfig("Invalid request."),
+      [status.INTERNAL_SERVER_ERROR]: createErrorResponseConfig(
+        "Render or print failure.",
+      ),
+      [status.REQUEST_ENTITY_TOO_LARGE]: createErrorResponseConfig(
+        "Request body too large.",
+      ),
       [status.UNAUTHORIZED]: createErrorResponseConfig("Unauthorized."),
       [status.UNSUPPORTED_MEDIA_TYPE]: createErrorResponseConfig(
         "Unsupported content type.",
-      ),
-      [status.INTERNAL_SERVER_ERROR]: createErrorResponseConfig(
-        "Render or print failure.",
       ),
     },
     security: [
@@ -56,6 +61,16 @@ export const registerPrintRoute = (
   app.use(
     route.getRoutingPath(),
     auth(config.apiToken),
+    bodyLimit({
+      maxSize: config.maxRequestBodyBytes,
+      onError: (c) =>
+        c.json(
+          createErrorResponseBody(
+            `Request body must not exceed ${config.maxRequestBodyBytes} bytes.`,
+          ),
+          status.REQUEST_ENTITY_TOO_LARGE,
+        ),
+    }),
     requireJsonContentType(),
   );
 

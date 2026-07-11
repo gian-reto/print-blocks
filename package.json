@@ -22,6 +22,7 @@
     "@asteasolutions/zod-to-openapi": "^8.5.0",
     "@hono/node-server": "^2.0.4",
     "@hono/zod-openapi": "^1.4.0",
+    "@react-thermal-printer/image": "0.14.0",
     "dotenv": "^17.4.2",
     "hono": "^4.12.23",
     "http-status": "^2.1.0",
@@ -30,6 +31,7 @@
     "react-dom": "^19.2.6",
     "react-thermal-printer": "^0.22.0",
     "remeda": "^2.37.0",
+    "sharp": "^0.34.5",
     "zod": "^4.4.3"
   },
   "devDependencies": {

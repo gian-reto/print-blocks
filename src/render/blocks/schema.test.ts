@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { createPrintRequestSchema } from "./schema";
+import { whitePixelPngBase64 } from "../../test/fixtures/image";
 
 const createSchema = () =>
   createPrintRequestSchema({
@@ -64,6 +65,16 @@ describe("print request schema", () => {
 
     expect(result).toEqual({
       blocks: [{ type: "br" }],
+    });
+  });
+
+  it("accepts image blocks", () => {
+    const result = createSchema().parse({
+      blocks: [{ type: "image", src: whitePixelPngBase64, align: "center" }],
+    });
+
+    expect(result).toEqual({
+      blocks: [{ type: "image", src: whitePixelPngBase64, align: "center" }],
     });
   });
 

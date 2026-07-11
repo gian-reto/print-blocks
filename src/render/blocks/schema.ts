@@ -1,6 +1,7 @@
 import { z } from "@hono/zod-openapi";
 import { createBarcodeBlockSchema, type BarcodeBlock } from "./barcode/schema";
 import { createBrBlockSchema, type BrBlock } from "./br/schema";
+import { createImageBlockSchema, type ImageBlock } from "./image/schema";
 import { createLineBlockSchema, type LineBlock } from "./line/schema";
 import { createQrCodeBlockSchema, type QrCodeBlock } from "./qrcode/schema";
 import { createRowBlockSchema, type RowBlock } from "./row/schema";
@@ -10,6 +11,7 @@ export const createPrintBlockSchema = (maxTextCharsPerBlock: number) =>
   z.discriminatedUnion("type", [
     createBarcodeBlockSchema(),
     createBrBlockSchema(),
+    createImageBlockSchema(),
     createLineBlockSchema(),
     createQrCodeBlockSchema(),
     createRowBlockSchema(maxTextCharsPerBlock),
@@ -19,6 +21,7 @@ export const createPrintBlockSchema = (maxTextCharsPerBlock: number) =>
 export type PrintBlock =
   | BarcodeBlock
   | BrBlock
+  | ImageBlock
   | LineBlock
   | QrCodeBlock
   | RowBlock
@@ -45,6 +48,12 @@ export const createPrintRequestSchema = (options: {
             },
             {
               type: "br",
+            },
+            {
+              type: "image",
+              src: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
+              align: "center",
+              transforms: ["floydSteinberg"],
             },
             {
               type: "line",

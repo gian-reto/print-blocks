@@ -61,6 +61,7 @@ export type AppConfig = {
   printerCharacterSet: CharacterSet;
   printTimeoutMs: number;
   apiToken: string;
+  maxRequestBodyBytes: number;
   maxBlocksPerPrintJob: number;
   maxTextCharsPerBlock: number;
 };
@@ -109,6 +110,7 @@ const envSchema = z
     PRINT_TIMEOUT_MS: integerFromEnv(15_000),
     API_TOKEN: z.string().min(32),
     MAX_BLOCKS_PER_PRINT_JOB: integerFromEnv(50),
+    MAX_REQUEST_BODY_BYTES: integerFromEnv(10 * 1024 * 1024),
     MAX_TEXT_CHARS_PER_BLOCK: integerFromEnv(5_000),
   })
   .passthrough();
@@ -130,6 +132,7 @@ export const loadConfig = (env: NodeJS.ProcessEnv = process.env): AppConfig => {
     printTimeoutMs: parsedEnv.PRINT_TIMEOUT_MS,
     apiToken: parsedEnv.API_TOKEN,
     maxBlocksPerPrintJob: parsedEnv.MAX_BLOCKS_PER_PRINT_JOB,
+    maxRequestBodyBytes: parsedEnv.MAX_REQUEST_BODY_BYTES,
     maxTextCharsPerBlock: parsedEnv.MAX_TEXT_CHARS_PER_BLOCK,
   };
 };

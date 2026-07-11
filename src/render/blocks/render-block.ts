@@ -1,6 +1,7 @@
 import type { PrintBlock } from "./schema";
 import { renderBarcodeBlock } from "./barcode";
 import { renderBrBlock } from "./br";
+import { renderImageBlock } from "./image";
 import { renderLineBlock } from "./line";
 import { renderQrCodeBlock } from "./qrcode";
 import { renderRowBlock } from "./row";
@@ -14,6 +15,9 @@ export const renderBlock = (block: PrintBlock) => {
 
     case "br":
       return renderBrBlock(block);
+
+    case "image":
+      return renderImageBlock(block);
 
     case "line":
       return renderLineBlock(block);
