@@ -2,12 +2,12 @@ import { config as loadDotenv } from "dotenv";
 import type { CharacterSet, PrinterType } from "react-thermal-printer";
 import { z } from "zod";
 
-export const printerTypeValues = [
+const printerTypeValues = [
   "epson",
   "star",
 ] as const satisfies readonly PrinterType[];
 
-export const characterSetValues = [
+const printerCharacterSetValues = [
   "pc437_usa",
   "pc850_multilingual",
   "pc860_portuguese",
@@ -53,21 +53,32 @@ export const characterSetValues = [
 ] as const satisfies readonly CharacterSet[];
 
 export type AppConfig = {
+  // Server
   host: string;
   port: number;
+
+  // Printer
+  printerCharacterSet: CharacterSet;
   printerName: string | undefined;
   printerType: PrinterType;
   printerWidth: number;
-  printerCharacterSet: CharacterSet;
   printTimeoutMs: number;
+
+  // API
   apiToken: string;
   exposeDocs: boolean;
   exposeLlmsTxt: boolean;
   exposeMcp: boolean;
   mcpToken: string | undefined;
-  maxRequestBodyBytes: number;
+
+  // Limits and features
+  allowRemoteImageUrls: boolean;
   maxBlocksPerPrintJob: number;
+  maxImageInputPixels: number;
+  maxRemoteImageBytes: number;
+  maxRequestBodyBytes: number;
   maxTextCharsPerBlock: number;
+  remoteImageTimeoutMs: number;
 };
 
 const emptyStringToUndefined = (value: unknown) =>
@@ -124,27 +135,38 @@ const stringFromEnv = (defaultValue: string) =>
 
 const envSchema = z
   .object({
+    // Server
     HOST: stringFromEnv("0.0.0.0"),
     PORT: portFromEnv,
+
+    // Printer
+    PRINT_TIMEOUT_MS: integerFromEnv(15_000),
+    PRINTER_CHARACTER_SET: z.preprocess(
+      (value) => emptyStringToUndefined(value) ?? "pc437_usa",
+      z.enum(printerCharacterSetValues),
+    ),
     PRINTER_NAME: optionalStringFromEnv,
     PRINTER_TYPE: z.preprocess(
       (value) => emptyStringToUndefined(value) ?? "epson",
       z.enum(printerTypeValues),
     ),
     PRINTER_WIDTH: integerFromEnv(48),
-    PRINTER_CHARACTER_SET: z.preprocess(
-      (value) => emptyStringToUndefined(value) ?? "pc437_usa",
-      z.enum(characterSetValues),
-    ),
-    PRINT_TIMEOUT_MS: integerFromEnv(15_000),
+
+    // API
     API_TOKEN: z.string().min(32),
     EXPOSE_DOCS: booleanFromEnv(false),
     EXPOSE_LLMS_TXT: booleanFromEnv(false),
     EXPOSE_MCP: booleanFromEnv(false),
     MCP_TOKEN: optionalStringFromEnv,
+
+    // Limits and features
+    ALLOW_REMOTE_IMAGE_URLS: booleanFromEnv(false),
     MAX_BLOCKS_PER_PRINT_JOB: integerFromEnv(50),
+    MAX_IMAGE_INPUT_PIXELS: integerFromEnv(25_000_000),
+    MAX_REMOTE_IMAGE_BYTES: integerFromEnv(5 * 1024 * 1024),
     MAX_REQUEST_BODY_BYTES: integerFromEnv(10 * 1024 * 1024),
     MAX_TEXT_CHARS_PER_BLOCK: integerFromEnv(5_000),
+    REMOTE_IMAGE_TIMEOUT_MS: integerFromEnv(5_000),
   })
   .superRefine((env, ctx) => {
     if (!env.EXPOSE_MCP) {
@@ -178,20 +200,31 @@ export const loadConfig = (env: NodeJS.ProcessEnv = process.env): AppConfig => {
   const parsedEnv = envSchema.parse(env);
 
   return {
+    // Server
     host: parsedEnv.HOST,
     port: parsedEnv.PORT,
+
+    // Printer
+    printerCharacterSet: parsedEnv.PRINTER_CHARACTER_SET,
     printerName: parsedEnv.PRINTER_NAME,
     printerType: parsedEnv.PRINTER_TYPE,
     printerWidth: parsedEnv.PRINTER_WIDTH,
-    printerCharacterSet: parsedEnv.PRINTER_CHARACTER_SET,
     printTimeoutMs: parsedEnv.PRINT_TIMEOUT_MS,
+
+    // API
     apiToken: parsedEnv.API_TOKEN,
     exposeDocs: parsedEnv.EXPOSE_DOCS,
     exposeLlmsTxt: parsedEnv.EXPOSE_LLMS_TXT,
     exposeMcp: parsedEnv.EXPOSE_MCP,
     mcpToken: parsedEnv.MCP_TOKEN,
+
+    // Limits and features
+    allowRemoteImageUrls: parsedEnv.ALLOW_REMOTE_IMAGE_URLS,
     maxBlocksPerPrintJob: parsedEnv.MAX_BLOCKS_PER_PRINT_JOB,
+    maxImageInputPixels: parsedEnv.MAX_IMAGE_INPUT_PIXELS,
+    maxRemoteImageBytes: parsedEnv.MAX_REMOTE_IMAGE_BYTES,
     maxRequestBodyBytes: parsedEnv.MAX_REQUEST_BODY_BYTES,
     maxTextCharsPerBlock: parsedEnv.MAX_TEXT_CHARS_PER_BLOCK,
+    remoteImageTimeoutMs: parsedEnv.REMOTE_IMAGE_TIMEOUT_MS,
   };
 };

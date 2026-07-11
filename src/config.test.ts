@@ -16,9 +16,13 @@ describe("loadConfig", () => {
       printerWidth: 48,
       printerCharacterSet: "pc437_usa",
       printTimeoutMs: 15_000,
+      allowRemoteImageUrls: false,
       maxRequestBodyBytes: 10 * 1024 * 1024,
       maxBlocksPerPrintJob: 50,
       maxTextCharsPerBlock: 5_000,
+      maxRemoteImageBytes: 5 * 1024 * 1024,
+      maxImageInputPixels: 25_000_000,
+      remoteImageTimeoutMs: 5_000,
     });
   });
 
@@ -31,6 +35,9 @@ describe("loadConfig", () => {
       MAX_BLOCKS_PER_PRINT_JOB: "10",
       MAX_REQUEST_BODY_BYTES: "2048",
       MAX_TEXT_CHARS_PER_BLOCK: "100",
+      MAX_REMOTE_IMAGE_BYTES: "1024",
+      MAX_IMAGE_INPUT_PIXELS: "1000000",
+      REMOTE_IMAGE_TIMEOUT_MS: "2500",
     });
 
     expect(config).toMatchObject({
@@ -40,7 +47,19 @@ describe("loadConfig", () => {
       maxRequestBodyBytes: 2048,
       maxBlocksPerPrintJob: 10,
       maxTextCharsPerBlock: 100,
+      maxRemoteImageBytes: 1024,
+      maxImageInputPixels: 1_000_000,
+      remoteImageTimeoutMs: 2_500,
     });
+  });
+
+  it("parses the remote image URL feature flag", () => {
+    const config = loadConfig({
+      API_TOKEN: apiToken,
+      ALLOW_REMOTE_IMAGE_URLS: "true",
+    });
+
+    expect(config.allowRemoteImageUrls).toBe(true);
   });
 
   it("rejects short API tokens", () => {

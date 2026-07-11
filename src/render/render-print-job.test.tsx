@@ -7,10 +7,16 @@ const options: PrinterRenderOptions = {
   type: "epson",
   width: 48,
   characterSet: "pc437_usa",
+  imageSource: {
+    maxImageInputPixels: 25_000_000,
+    maxRemoteImageBytes: 5 * 1024 * 1024,
+    remoteImageTimeoutMs: 5_000,
+  },
 };
 
 const createSchema = () =>
   createPrintRequestSchema({
+    allowRemoteImageUrls: false,
     maxBlocksPerPrintJob: 20,
     maxTextCharsPerBlock: 5_000,
   });
@@ -29,7 +35,7 @@ describe("renderPrintJob", () => {
         { type: "br" },
         {
           type: "image",
-          src: whitePixelPngBase64,
+          data: whitePixelPngBase64,
           align: "center",
           fit: "inside",
           withoutEnlargement: true,

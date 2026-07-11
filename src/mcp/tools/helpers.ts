@@ -6,9 +6,10 @@ import { packageInfo } from "../../util/package-info";
 
 // Derive supported block types from the print block schema to ensure
 // consistency with actual supported blocks.
-export const supportedBlockTypes = createPrintBlockSchema(1).def.options.map(
-  (option) => option.def.shape.type.value,
-);
+export const supportedBlockTypes = createPrintBlockSchema({
+  allowRemoteImageUrls: true,
+  maxTextCharsPerBlock: 1,
+}).def.options.map((option) => option.def.shape.type.value);
 
 export const simplePrintRequestExample = JSON.stringify(
   {

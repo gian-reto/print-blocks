@@ -5,18 +5,19 @@ import sharp from "sharp";
 import { transforms } from "@react-thermal-printer/image";
 import { whitePixelPngBase64 } from "../../../test/fixtures/image";
 
-const createSchema = () => createImageBlockSchema();
+const createSchema = (allowRemoteImageUrls = false) =>
+  createImageBlockSchema({ allowRemoteImageUrls });
 
 describe("image block schema", () => {
   it("accepts image blocks", () => {
     const result = createSchema().parse({
       type: "image",
-      src: whitePixelPngBase64,
+      data: whitePixelPngBase64,
     });
 
     expect(result).toEqual({
       type: "image",
-      src: whitePixelPngBase64,
+      data: whitePixelPngBase64,
       fit: sharp.fit.inside,
       withoutEnlargement: true,
     });
@@ -25,7 +26,7 @@ describe("image block schema", () => {
   it("accepts all component options", () => {
     const result = createSchema().parse({
       type: "image",
-      src: whitePixelPngBase64,
+      data: whitePixelPngBase64,
       align: "center",
       fit: "cover",
       withoutEnlargement: false,
@@ -35,7 +36,7 @@ describe("image block schema", () => {
 
     expect(result).toEqual({
       type: "image",
-      src: whitePixelPngBase64,
+      data: whitePixelPngBase64,
       align: "center",
       fit: sharp.fit.cover,
       withoutEnlargement: false,
@@ -46,31 +47,26 @@ describe("image block schema", () => {
     expect(result.rgbToBlack?.({ r: 255, g: 255, b: 255, a: 255 })).toBe(false);
   });
 
-  it("strips extra fields", () => {
-    const result = createSchema().parse({
+  it("rejects extra fields", () => {
+    const result = createSchema().safeParse({
       type: "image",
-      src: whitePixelPngBase64,
+      data: whitePixelPngBase64,
       unknown: true,
     });
 
-    expect(result).toEqual({
-      type: "image",
-      src: whitePixelPngBase64,
-      fit: sharp.fit.inside,
-      withoutEnlargement: true,
-    });
+    expect(result.success).toBe(false);
   });
 
   it.each(Object.values(sharp.fit))("accepts sharp fit mode %s", (fit) => {
     const result = createSchema().parse({
       type: "image",
-      src: whitePixelPngBase64,
+      data: whitePixelPngBase64,
       fit,
     });
 
     expect(result).toMatchObject({
       type: "image",
-      src: whitePixelPngBase64,
+      data: whitePixelPngBase64,
       fit,
     });
   });
@@ -82,15 +78,75 @@ describe("image block schema", () => {
   });
 
   it("rejects empty sources", () => {
-    const result = createSchema().safeParse({ type: "image", src: "" });
+    const result = createSchema().safeParse({ type: "image", data: "" });
 
     expect(result.success).toBe(false);
   });
 
-  it("rejects remote URLs", () => {
+  it("accepts remote URLs when enabled", () => {
+    const result = createSchema(true).parse({
+      type: "image",
+      url: "https://example.com/logo.png",
+    });
+
+    expect(result).toEqual({
+      type: "image",
+      url: "https://example.com/logo.png",
+      fit: sharp.fit.inside,
+      withoutEnlargement: true,
+    });
+  });
+
+  it("rejects remote URLs when disabled", () => {
     const result = createSchema().safeParse({
       type: "image",
-      src: "https://example.com/logo.png",
+      url: "https://example.com/logo.png",
+    });
+
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects image blocks containing both data and url", () => {
+    const result = createSchema(true).safeParse({
+      type: "image",
+      data: whitePixelPngBase64,
+      url: "https://example.com/logo.png",
+    });
+
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects plain HTTP URLs", () => {
+    const result = createSchema(true).safeParse({
+      type: "image",
+      url: "http://example.com/logo.png",
+    });
+
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects direct IP address URLs", () => {
+    const result = createSchema(true).safeParse({
+      type: "image",
+      url: "https://127.0.0.1/logo.png",
+    });
+
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects encoded direct IP address URLs", () => {
+    const result = createSchema(true).safeParse({
+      type: "image",
+      url: "https://2130706433/logo.png",
+    });
+
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects URLs with credentials", () => {
+    const result = createSchema(true).safeParse({
+      type: "image",
+      url: "https://user:password@example.com/logo.png",
     });
 
     expect(result.success).toBe(false);
@@ -99,7 +155,7 @@ describe("image block schema", () => {
   it("rejects data URLs", () => {
     const result = createSchema().safeParse({
       type: "image",
-      src: `data:image/png;base64,${whitePixelPngBase64}`,
+      data: `data:image/png;base64,${whitePixelPngBase64}`,
     });
 
     expect(result.success).toBe(false);
@@ -108,7 +164,7 @@ describe("image block schema", () => {
   it("rejects invalid base64 data", () => {
     const result = createSchema().safeParse({
       type: "image",
-      src: "not valid base64",
+      data: "not valid base64",
     });
 
     expect(result.success).toBe(false);
@@ -117,7 +173,7 @@ describe("image block schema", () => {
   it("rejects invalid alignment", () => {
     const result = createSchema().safeParse({
       type: "image",
-      src: whitePixelPngBase64,
+      data: whitePixelPngBase64,
       align: "top",
     });
 
@@ -127,7 +183,7 @@ describe("image block schema", () => {
   it("rejects invalid fit modes", () => {
     const result = createSchema().safeParse({
       type: "image",
-      src: whitePixelPngBase64,
+      data: whitePixelPngBase64,
       fit: "invalid",
     });
 
@@ -137,7 +193,7 @@ describe("image block schema", () => {
   it("rejects invalid withoutEnlargement values", () => {
     const result = createSchema().safeParse({
       type: "image",
-      src: whitePixelPngBase64,
+      data: whitePixelPngBase64,
       withoutEnlargement: "false",
     });
 
@@ -147,7 +203,7 @@ describe("image block schema", () => {
   it("rejects invalid transforms", () => {
     const result = createSchema().safeParse({
       type: "image",
-      src: whitePixelPngBase64,
+      data: whitePixelPngBase64,
       transforms: ["unknown"],
     });
 
@@ -157,7 +213,7 @@ describe("image block schema", () => {
   it("rejects duplicate transforms", () => {
     const result = createSchema().safeParse({
       type: "image",
-      src: whitePixelPngBase64,
+      data: whitePixelPngBase64,
       transforms: ["floydSteinberg", "floydSteinberg"],
     });
 
@@ -167,7 +223,7 @@ describe("image block schema", () => {
   it("rejects invalid rgbToBlack thresholds", () => {
     const result = createSchema().safeParse({
       type: "image",
-      src: whitePixelPngBase64,
+      data: whitePixelPngBase64,
       rgbToBlack: 256,
     });
 

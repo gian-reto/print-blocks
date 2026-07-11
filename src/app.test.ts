@@ -8,21 +8,32 @@ import status from "http-status";
 const apiToken = "12345678901234567890123456789012";
 
 const config: AppConfig = {
+  // Server
   host: "127.0.0.1",
   port: 3000,
+
+  // Printer
+  printerCharacterSet: "pc437_usa",
   printerName: "receipt-printer",
   printerType: "epson",
   printerWidth: 48,
-  printerCharacterSet: "pc437_usa",
   printTimeoutMs: 15_000,
+
+  // API
   apiToken,
   exposeDocs: true,
   exposeLlmsTxt: true,
   exposeMcp: false,
   mcpToken: undefined,
-  maxRequestBodyBytes: 10 * 1024 * 1024,
+
+  // Limits and features
+  allowRemoteImageUrls: false,
   maxBlocksPerPrintJob: 50,
+  maxImageInputPixels: 25_000_000,
+  maxRemoteImageBytes: 5 * 1024 * 1024,
+  maxRequestBodyBytes: 10 * 1024 * 1024,
   maxTextCharsPerBlock: 5_000,
+  remoteImageTimeoutMs: 5_000,
 };
 
 const createRecordingTransport = () => {

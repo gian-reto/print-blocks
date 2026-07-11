@@ -30,9 +30,11 @@ Copy the example environment file and edit it:
 cp .env.example .env
 ```
 
-Documentation endpoints are disabled by default. Set `EXPOSE_DOCS=true` to enable `/docs` and `EXPOSE_LLMS_TXT=true` to enable `/llms.txt`.
+Note:
 
-The MCP endpoint is disabled by default. Set `EXPOSE_MCP=true` and provide a separate `MCP_TOKEN` with at least 32 characters to enable `/mcp`.
+- Documentation endpoints are disabled by default. Set `EXPOSE_DOCS=true` to enable `/docs` and `EXPOSE_LLMS_TXT=true` to enable `/llms.txt`.
+- The MCP endpoint is disabled by default. Set `EXPOSE_MCP=true` and provide a separate `MCP_TOKEN` with at least 32 characters to enable `/mcp`.
+- Image blocks accept base64-encoded data through the `data` property. Remote image URLs are disabled by default. Set `ALLOW_REMOTE_IMAGE_URLS=true` to allow image blocks to use an HTTPS `url` instead. Remote image fetching is intentionally strict: only HTTPS URLs with public domain hostnames are accepted, direct IP addresses and credentials are rejected, redirects are not followed, downloaded bytes are limited by `MAX_REMOTE_IMAGE_BYTES`, fetches time out after `REMOTE_IMAGE_TIMEOUT_MS`, and decoded image input is limited by `MAX_IMAGE_INPUT_PIXELS`. These restrictions are in place to prevent abuse and security issues, but enabling remote image URLs is only recommended in trusted environments.
 
 ## Development
 

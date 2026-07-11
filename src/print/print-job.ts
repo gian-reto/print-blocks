@@ -10,4 +10,9 @@ export const renderPrintRequest = async (
     type: config.printerType,
     width: config.printerWidth,
     characterSet: config.printerCharacterSet,
+    imageSource: {
+      maxImageInputPixels: config.maxImageInputPixels,
+      maxRemoteImageBytes: config.maxRemoteImageBytes,
+      remoteImageTimeoutMs: config.remoteImageTimeoutMs,
+    },
   });

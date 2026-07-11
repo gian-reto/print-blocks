@@ -5,6 +5,7 @@ import { template } from "./template";
 
 const createSchema = () =>
   createPrintRequestSchema({
+    allowRemoteImageUrls: false,
     maxBlocksPerPrintJob: template.blocks.length,
     maxTextCharsPerBlock: 100,
   });

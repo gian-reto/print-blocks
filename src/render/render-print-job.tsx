@@ -10,6 +10,11 @@ export type PrinterRenderOptions = {
   type: PrinterType;
   width: number;
   characterSet: CharacterSet;
+  imageSource: {
+    maxImageInputPixels: number;
+    maxRemoteImageBytes: number;
+    remoteImageTimeoutMs: number;
+  };
 };
 
 export const renderPrintJob = async (
@@ -17,6 +22,7 @@ export const renderPrintJob = async (
   options: PrinterRenderOptions,
 ): Promise<Uint8Array> => {
   const blockRenderContext = {
+    imageSource: options.imageSource,
     printerDotWidth: getPrinterDotWidth(options.width),
   };
 

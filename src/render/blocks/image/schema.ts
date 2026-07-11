@@ -5,19 +5,48 @@ import sharp from "sharp";
 import { transforms } from "@react-thermal-printer/image";
 import { z } from "@hono/zod-openapi";
 
-export const createImageBlockSchema = () =>
+type CreateImageBlockSchemaOptions = {
+  allowRemoteImageUrls: boolean;
+};
+
+export const remoteImageUrlSchema = z
+  .url({
+    protocol: /^https$/,
+    hostname: z.regexes.domain,
+    normalize: true,
+  })
+  .refine(
+    (value) => {
+      const url = new URL(value);
+
+      return url.username === "" && url.password === "";
+    },
+    {
+      message: "Remote image URLs must not include credentials.",
+    },
+  )
+  .openapi({
+    description:
+      "HTTPS image URL with a public domain hostname. Direct IP addresses, plain HTTP, credentials, localhost-style names, and redirects are not allowed.",
+    example: "https://example.com/logo.png",
+  });
+
+export const createImageBlockSchema = ({
+  allowRemoteImageUrls,
+}: CreateImageBlockSchemaOptions) =>
   z
-    .object({
+    .strictObject({
       type: z.literal("image").openapi({
         description: "Discriminator for image blocks.",
         example: "image",
       }),
-      src: z.base64().min(1).openapi({
+      data: z.base64().min(1).optional().openapi({
         description:
-          "Base64-encoded image data. Remote URLs are not supported; Sharp must be able to decode the image format.",
+          "Base64-encoded image data. Provide exactly one of data or url. Sharp must be able to decode the image format.",
         example:
           "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
       }),
+      url: remoteImageUrlSchema.optional(),
       align: z.enum(["left", "center", "right"]).optional().openapi({
         description: "Horizontal alignment of the printed image.",
         example: "center",
@@ -68,7 +97,26 @@ export const createImageBlockSchema = () =>
           example: 230,
         }),
     })
-    .strip()
+    .superRefine((block, ctx) => {
+      const hasData = block.data !== undefined;
+      const hasUrl = block.url !== undefined;
+
+      if (hasData === hasUrl) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Image blocks must include exactly one of data or url.",
+          path: ["data"],
+        });
+      }
+
+      if (hasUrl && !allowRemoteImageUrls) {
+        ctx.addIssue({
+          code: "custom",
+          message: "Remote image URLs are disabled by server configuration.",
+          path: ["url"],
+        });
+      }
+    })
     .openapi("ImageBlock");
 
 export type ImageBlock = z.infer<ReturnType<typeof createImageBlockSchema>>;

@@ -8,15 +8,24 @@ import { createRowBlockSchema, type RowBlock } from "./row/schema";
 import { createTextBlockSchema, type TextBlock } from "./text/schema";
 import { packageInfo } from "../../util/package-info";
 
-export const createPrintBlockSchema = (maxTextCharsPerBlock: number) =>
+type CreatePrintBlockSchemaOptions = {
+  allowRemoteImageUrls: boolean;
+  maxTextCharsPerBlock: number;
+};
+
+export const createPrintBlockSchema = (
+  options: CreatePrintBlockSchemaOptions,
+) =>
   z.discriminatedUnion("type", [
     createBarcodeBlockSchema(),
     createBrBlockSchema(),
-    createImageBlockSchema(),
+    createImageBlockSchema({
+      allowRemoteImageUrls: options.allowRemoteImageUrls,
+    }),
     createLineBlockSchema(),
     createQrCodeBlockSchema(),
-    createRowBlockSchema(maxTextCharsPerBlock),
-    createTextBlockSchema(maxTextCharsPerBlock),
+    createRowBlockSchema(options.maxTextCharsPerBlock),
+    createTextBlockSchema(options.maxTextCharsPerBlock),
   ]);
 
 export type PrintBlock =
@@ -29,13 +38,19 @@ export type PrintBlock =
   | TextBlock;
 
 export const createPrintRequestSchema = (options: {
+  allowRemoteImageUrls: boolean;
   maxBlocksPerPrintJob: number;
   maxTextCharsPerBlock: number;
 }) =>
   z
     .object({
       blocks: z
-        .array(createPrintBlockSchema(options.maxTextCharsPerBlock))
+        .array(
+          createPrintBlockSchema({
+            allowRemoteImageUrls: options.allowRemoteImageUrls,
+            maxTextCharsPerBlock: options.maxTextCharsPerBlock,
+          }),
+        )
         .min(1)
         .max(options.maxBlocksPerPrintJob)
         .openapi({
@@ -52,7 +67,7 @@ export const createPrintRequestSchema = (options: {
             },
             {
               type: "image",
-              src: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
+              data: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
               align: "center",
               fit: "inside",
               withoutEnlargement: true,

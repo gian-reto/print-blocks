@@ -33,6 +33,7 @@ export const createApp = ({
       timeoutMs: config.printTimeoutMs,
     });
   const printRequestSchema = createPrintRequestSchema({
+    allowRemoteImageUrls: config.allowRemoteImageUrls,
     maxBlocksPerPrintJob: config.maxBlocksPerPrintJob,
     maxTextCharsPerBlock: config.maxTextCharsPerBlock,
   });

@@ -6,6 +6,7 @@ import { whitePixelPngBase64 } from "../../test/fixtures/image";
 
 const createSchema = () =>
   createPrintRequestSchema({
+    allowRemoteImageUrls: false,
     maxBlocksPerPrintJob: 2,
     maxTextCharsPerBlock: 5,
   });
@@ -71,14 +72,14 @@ describe("print request schema", () => {
 
   it("accepts image blocks", () => {
     const result = createSchema().parse({
-      blocks: [{ type: "image", src: whitePixelPngBase64, align: "center" }],
+      blocks: [{ type: "image", data: whitePixelPngBase64, align: "center" }],
     });
 
     expect(result).toEqual({
       blocks: [
         {
           type: "image",
-          src: whitePixelPngBase64,
+          data: whitePixelPngBase64,
           align: "center",
           fit: sharp.fit.inside,
           withoutEnlargement: true,

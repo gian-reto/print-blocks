@@ -23,6 +23,7 @@
     "@hono/mcp": "^0.3.0",
     "@hono/node-server": "^2.0.4",
     "@hono/zod-openapi": "^1.4.0",
+    "@microsoft/antissrf": "^1.0.0",
     "@modelcontextprotocol/sdk": "^1.29.0",
     "@react-thermal-printer/image": "0.14.0",
     "@scalar/hono-api-reference": "^0.10.19",
