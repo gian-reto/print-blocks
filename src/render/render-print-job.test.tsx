@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createPrintRequestSchema } from "./blocks/schema";
+import { ImageRenderError } from "./blocks/image/error";
 import { renderPrintJob, type PrinterRenderOptions } from "./render-print-job";
 import { whitePixelPngBase64 } from "../test/fixtures/image";
 
@@ -66,5 +67,26 @@ describe("renderPrintJob", () => {
 
     expect(result).toBeInstanceOf(Uint8Array);
     expect(result.byteLength).toBeGreaterThan(0);
+  });
+
+  it("throws actionable image errors for invalid image data", async () => {
+    const request = createSchema().parse({
+      blocks: [
+        {
+          type: "image",
+          data: Buffer.from("not an image").toString("base64"),
+        },
+      ],
+    });
+
+    await expect(renderPrintJob(request.blocks, options)).rejects.toMatchObject(
+      {
+        code: "IMAGE_SHARP_PROCESSING_ERROR",
+        message: "Input buffer contains unsupported image format",
+      },
+    );
+    await expect(
+      renderPrintJob(request.blocks, options),
+    ).rejects.toBeInstanceOf(ImageRenderError);
   });
 });

@@ -1,5 +1,6 @@
 import { AntiSSRFPolicy, PolicyConfigOptions } from "@microsoft/antissrf";
 
+import { ImageRenderError, type ImageRenderErrorCode } from "./error";
 import type { IncomingHttpHeaders } from "node:http";
 import { remoteImageUrlSchema } from "./schema";
 import { request } from "node:https";
@@ -9,16 +10,13 @@ export type RemoteImageFetchOptions = {
   timeoutMs: number;
 };
 
-export class RemoteImageFetchError extends Error {
-  constructor(message: string, options: { cause?: unknown } = {}) {
-    super(
-      message,
-      options.cause !== undefined ? { cause: options.cause } : undefined,
-    );
-
-    this.name = this.constructor.name;
-
-    Error.captureStackTrace(this, this.constructor);
+export class RemoteImageFetchError extends ImageRenderError {
+  constructor(
+    code: Extract<ImageRenderErrorCode, `REMOTE_IMAGE_${string}`>,
+    message: string,
+    options: { cause?: unknown; detail?: string } = {},
+  ) {
+    super(code, message, options);
   }
 }
 
@@ -47,6 +45,7 @@ const getContentLength = (headers: IncomingHttpHeaders) => {
 
   if (!Number.isSafeInteger(contentLength) || contentLength < 0) {
     throw new RemoteImageFetchError(
+      "REMOTE_IMAGE_INVALID_RESPONSE",
       "Remote image response included an invalid Content-Length header.",
     );
   }
@@ -103,6 +102,7 @@ export const fetchRemoteImage = async (
           res.resume();
           settle(
             new RemoteImageFetchError(
+              "REMOTE_IMAGE_REDIRECT_REJECTED",
               "Remote image redirects are not allowed.",
             ),
           );
@@ -113,6 +113,7 @@ export const fetchRemoteImage = async (
           res.resume();
           settle(
             new RemoteImageFetchError(
+              "REMOTE_IMAGE_REQUEST_FAILED",
               `Remote image request failed with HTTP status ${statusCode}.`,
             ),
           );
@@ -126,6 +127,7 @@ export const fetchRemoteImage = async (
             res.resume();
             settle(
               new RemoteImageFetchError(
+                "REMOTE_IMAGE_TOO_LARGE",
                 `Remote image response must not exceed ${options.maxBytes} bytes.`,
               ),
             );
@@ -137,6 +139,7 @@ export const fetchRemoteImage = async (
             error instanceof Error
               ? error
               : new RemoteImageFetchError(
+                  "REMOTE_IMAGE_INVALID_RESPONSE",
                   "Failed to validate remote image response headers.",
                   { cause: error },
                 ),
@@ -150,6 +153,7 @@ export const fetchRemoteImage = async (
           if (receivedBytes > options.maxBytes) {
             settle(
               new RemoteImageFetchError(
+                "REMOTE_IMAGE_TOO_LARGE",
                 `Remote image response must not exceed ${options.maxBytes} bytes.`,
               ),
             );
@@ -167,9 +171,13 @@ export const fetchRemoteImage = async (
 
         res.on("error", (error) => {
           settle(
-            new RemoteImageFetchError("Failed to read remote image response.", {
-              cause: error,
-            }),
+            new RemoteImageFetchError(
+              "REMOTE_IMAGE_REQUEST_FAILED",
+              "Failed to read remote image response.",
+              {
+                cause: error,
+              },
+            ),
           );
         });
       },
@@ -181,12 +189,17 @@ export const fetchRemoteImage = async (
       settle(
         isTimeout
           ? new RemoteImageFetchError(
+              "REMOTE_IMAGE_TIMEOUT",
               `Timed out fetching remote image after ${options.timeoutMs} ms.`,
               { cause: error },
             )
-          : new RemoteImageFetchError("Failed to fetch remote image.", {
-              cause: error,
-            }),
+          : new RemoteImageFetchError(
+              "REMOTE_IMAGE_FETCH_FAILED",
+              "Failed to fetch remote image.",
+              {
+                cause: error,
+              },
+            ),
       );
     });
 

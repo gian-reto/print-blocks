@@ -3,6 +3,7 @@ import type { ComponentProps } from "react";
 import { Image } from "react-thermal-printer";
 import type { ImageBlock } from "./schema";
 import type { Image as ImageData } from "@react-thermal-printer/image";
+import { ImageRenderError } from "./error";
 import { fetchRemoteImage } from "./remote";
 import { omit } from "../../../util/omit";
 import { omitUndefined } from "../../../util/omit-undefined";
@@ -25,7 +26,10 @@ const readImageData = async (
     });
   }
 
-  throw new Error("Image block must include data or url.");
+  throw new ImageRenderError(
+    "IMAGE_SOURCE_MISSING",
+    "Image block must include data or url.",
+  );
 };
 
 const createReader = (
@@ -33,19 +37,39 @@ const createReader = (
   context: BlockRenderContext,
 ): NonNullable<ImageProps["reader"]> => {
   return async (): Promise<ImageData> => {
-    const image = await readImageData(block, context);
-    const { data, info } = await sharp(image, {
-      limitInputPixels: context.imageSource.maxImageInputPixels,
-    })
-      .resize({
-        width: context.printerDotWidth,
-        fit: block.fit,
-        withoutEnlargement: block.withoutEnlargement,
+    let data: Buffer;
+    let info: sharp.OutputInfo;
+
+    try {
+      const image = await readImageData(block, context);
+      const renderedImage = await sharp(image, {
+        limitInputPixels: context.imageSource.maxImageInputPixels,
       })
-      .toColorspace("srgb")
-      .ensureAlpha()
-      .raw()
-      .toBuffer({ resolveWithObject: true });
+        .resize({
+          width: context.printerDotWidth,
+          fit: block.fit,
+          withoutEnlargement: block.withoutEnlargement,
+        })
+        .toColorspace("srgb")
+        .ensureAlpha()
+        .raw()
+        .toBuffer({ resolveWithObject: true });
+
+      data = renderedImage.data;
+      info = renderedImage.info;
+    } catch (error) {
+      if (error instanceof ImageRenderError) {
+        throw error;
+      }
+
+      throw new ImageRenderError(
+        "IMAGE_SHARP_PROCESSING_ERROR",
+        error instanceof Error
+          ? error.message
+          : "Sharp failed to process the image.",
+        { cause: error },
+      );
+    }
 
     return {
       data: new Uint8Array(data),

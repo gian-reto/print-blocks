@@ -5,6 +5,7 @@ import {
 } from "./helpers";
 
 import type { AppConfig } from "../../config";
+import { ImageRenderError } from "../../render/blocks/image/error";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { PrintError } from "../../print/error";
 import type { PrintTransport } from "../../print/types";
@@ -14,6 +15,37 @@ type RegisterPrintToolOptions = {
   config: AppConfig;
   inputSchema: McpPrintRequestSchema;
   transport: PrintTransport;
+};
+
+export const createRenderFailureToolResult = (error: unknown) => {
+  if (error instanceof ImageRenderError) {
+    return createToolResult(
+      {
+        ok: false,
+        printed: false,
+        error: {
+          code: error.code,
+          message: error.message,
+          ...(error.detail !== undefined ? { detail: error.detail } : {}),
+        },
+        message: "The print request was valid, but image rendering failed.",
+      },
+      { isError: true },
+    );
+  }
+
+  return createToolResult(
+    {
+      ok: false,
+      printed: false,
+      error: {
+        message: "Failed to render print job.",
+      },
+      message:
+        "The print request was valid, but rendering it to ESC/POS bytes failed. This means the request was well-formed and passed schema validation, but some part of the content likely couldn't be translated into printer commands. This is usually solved by simplifying the print request, e.g. using less complex characters or images.",
+    },
+    { isError: true },
+  );
 };
 
 export const registerPrintTool = (
@@ -34,19 +66,8 @@ export const registerPrintTool = (
 
       try {
         data = await renderPrintRequest(input.blocks, config);
-      } catch {
-        return createToolResult(
-          {
-            ok: false,
-            printed: false,
-            error: {
-              message: "Failed to render print job.",
-            },
-            message:
-              "The print request was valid, but rendering it to ESC/POS bytes failed. This means the request was well-formed and passed schema validation, but some part of the content likely couldn't be translated into printer commands. This is usually solved by simplifying the print request, e.g. using less complex characters or images.",
-          },
-          { isError: true },
-        );
+      } catch (error) {
+        return createRenderFailureToolResult(error);
       }
 
       try {
