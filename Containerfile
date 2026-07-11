@@ -13,6 +13,7 @@ RUN pnpm install --frozen-lockfile
 FROM deps AS builder
 
 COPY tsconfig.json vite.config.ts eslint.config.js ./
+COPY assets ./assets
 COPY src ./src
 
 RUN pnpm build
@@ -33,6 +34,7 @@ ENV HOST=0.0.0.0
 ENV PORT=3000
 
 COPY --from=builder --chown=printblocks:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=printblocks:nodejs /app/assets ./assets
 COPY --from=builder --chown=printblocks:nodejs /app/dist ./dist
 COPY --from=builder --chown=printblocks:nodejs /app/package.json ./package.json
 
