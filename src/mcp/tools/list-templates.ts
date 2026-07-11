@@ -1,5 +1,5 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { createToolResult } from "./helpers";
+import { createToolResult } from "../helpers";
 import { getPrintTemplateSummaries } from "../templates";
 
 export const registerListTemplatesTool = (server: McpServer) => {

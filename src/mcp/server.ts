@@ -1,5 +1,4 @@
 import {
-  createMcpPrintRequestSchema,
   registerGetInfoTool,
   registerGetTemplateTool,
   registerListTemplatesTool,
@@ -8,9 +7,10 @@ import {
 
 import type { AppConfig } from "../config";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { packageInfo } from "../util/package-info";
 import type { PrintRequestSchema } from "../render/blocks/schema";
 import type { PrintTransport } from "../print/types";
+import { createMcpPrintRequestSchema } from "./helpers";
+import { packageInfo } from "../util/package-info";
 
 type CreatePrintBlocksMcpServerOptions = {
   config: AppConfig;

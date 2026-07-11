@@ -1,8 +1,8 @@
 import {
   createPrintBlockSchema,
   type PrintRequestSchema,
-} from "../../render/blocks/schema";
-import { packageInfo } from "../../util/package-info";
+} from "../render/blocks/schema";
+import { packageInfo } from "../util/package-info";
 
 // Derive supported block types from the print block schema to ensure
 // consistency with actual supported blocks.

@@ -2,7 +2,7 @@ import {
   createToolResult,
   simplePrintRequestExample,
   type McpPrintRequestSchema,
-} from "./helpers";
+} from "../helpers";
 
 import type { AppConfig } from "../../config";
 import { ImageRenderError } from "../../render/blocks/image/error";

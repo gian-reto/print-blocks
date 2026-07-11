@@ -1,7 +1,7 @@
 import { getPrintTemplateInfo, printTemplates } from "../templates";
 
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { createMarkdownToolResult } from "./helpers";
+import { createMarkdownToolResult } from "../helpers";
 import { z } from "zod";
 
 export const registerGetTemplateTool = (server: McpServer) => {

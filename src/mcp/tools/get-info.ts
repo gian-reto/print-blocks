@@ -1,4 +1,4 @@
-import { createToolResult, supportedBlockTypes } from "./helpers";
+import { createToolResult, supportedBlockTypes } from "../helpers";
 
 import type { AppConfig } from "../../config";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
