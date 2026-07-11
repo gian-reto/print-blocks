@@ -2,8 +2,10 @@ import { renderSatoriImage, satoriFontFamilies } from "../../satori";
 
 import type { BlockRenderContext } from "../context";
 import type { HeatmapBlock } from "./schema";
+import { floydSteinbergDither } from "./dither";
 
 const contentColor = "black";
+const grayscaleLightestChannel = 226;
 const heatmapBucketCount = 5;
 
 type HeatmapLayoutProps = {
@@ -32,12 +34,16 @@ const getHeatmapBucket = (value: number, maxValue: number) => {
   );
 };
 
-const getHeatmapBucketFill = (bucket: number) => {
-  const ratio = bucket / (heatmapBucketCount - 1);
-  const lightness = Math.round(90 * (1 - ratio) * 100) / 100;
+const getGrayscaleFill = (percentage: number) => {
+  const progress = Math.max(0, Math.min(1, percentage / 100));
+  const darkness = progress ** 2;
+  const channel = Math.round(grayscaleLightestChannel * (1 - darkness));
 
-  return `lab(${lightness}% 0 0)`;
+  return `rgb(${channel}, ${channel}, ${channel})`;
 };
+
+const getHeatmapBucketFill = (bucket: number) =>
+  getGrayscaleFill((bucket / (heatmapBucketCount - 1)) * 100);
 
 const getHeatmapFill = (value: number, maxValue: number) =>
   getHeatmapBucketFill(getHeatmapBucket(value, maxValue));
@@ -203,4 +209,5 @@ export const renderHeatmapBlock = (
   renderSatoriImage({
     context,
     element: <HeatmapLayout block={block} width={context.printerDotWidth} />,
+    transforms: [floydSteinbergDither],
   });

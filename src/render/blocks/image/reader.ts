@@ -75,7 +75,9 @@ export const createImageReader = ({
     }
 
     return {
-      data: new Uint8Array(data),
+      // Image transforms follow the browser ImageData contract and rely on
+      // clamped channel writes.
+      data: new Uint8ClampedArray(data) as unknown as ImageData["data"],
       height: info.height,
       width: info.width,
     };
