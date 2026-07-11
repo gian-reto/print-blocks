@@ -42,6 +42,16 @@ describe("print request schema", () => {
     });
   });
 
+  it("accepts line blocks", () => {
+    const result = createSchema().parse({
+      blocks: [{ type: "line", character: "=" }],
+    });
+
+    expect(result).toEqual({
+      blocks: [{ type: "line", character: "=" }],
+    });
+  });
+
   it("rejects empty block arrays", () => {
     const result = createSchema().safeParse({ blocks: [] });
 

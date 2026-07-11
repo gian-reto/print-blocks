@@ -1,14 +1,16 @@
 import { z } from "@hono/zod-openapi";
 import { createBrBlockSchema, type BrBlock } from "./br/schema";
+import { createLineBlockSchema, type LineBlock } from "./line/schema";
 import { createTextBlockSchema, type TextBlock } from "./text/schema";
 
 export const createPrintBlockSchema = (maxTextCharsPerBlock: number) =>
   z.discriminatedUnion("type", [
     createBrBlockSchema(),
+    createLineBlockSchema(),
     createTextBlockSchema(maxTextCharsPerBlock),
   ]);
 
-export type PrintBlock = BrBlock | TextBlock;
+export type PrintBlock = BrBlock | LineBlock | TextBlock;
 
 export const createPrintRequestSchema = (options: {
   maxBlocksPerPrintJob: number;
@@ -24,6 +26,10 @@ export const createPrintRequestSchema = (options: {
           example: [
             {
               type: "br",
+            },
+            {
+              type: "line",
+              character: "-",
             },
             {
               type: "text",
