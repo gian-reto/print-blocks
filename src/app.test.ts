@@ -16,6 +16,8 @@ const config: AppConfig = {
   printerCharacterSet: "pc437_usa",
   printTimeoutMs: 15_000,
   apiToken,
+  exposeDocs: true,
+  exposeLlmsTxt: true,
   maxRequestBodyBytes: 10 * 1024 * 1024,
   maxBlocksPerPrintJob: 50,
   maxTextCharsPerBlock: 5_000,

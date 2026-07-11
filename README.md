@@ -9,8 +9,8 @@ The service has no UI. It exposes:
 - `POST /print` for authenticated print jobs.
 - `GET /healthz` for unauthenticated liveness checks.
 - `GET /openapi.json` for generated OpenAPI JSON.
-- `GET /docs` for an interactive Scalar API reference.
-- `GET /llms.txt` for LLM-friendly Markdown API documentation.
+- `GET /docs` for an interactive Scalar API reference when `EXPOSE_DOCS=true`.
+- `GET /llms.txt` for LLM-friendly Markdown API documentation when `EXPOSE_LLMS_TXT=true`.
 
 ## Requirements
 
@@ -28,6 +28,8 @@ Copy the example environment file and edit it:
 ```sh
 cp .env.example .env
 ```
+
+Documentation endpoints are disabled by default. Set `EXPOSE_DOCS=true` to enable `/docs` and `EXPOSE_LLMS_TXT=true` to enable `/llms.txt`.
 
 ## Development
 
@@ -103,11 +105,11 @@ Returns the OpenAPI specification for the API.
 
 ### `GET /docs`
 
-Returns an interactive API reference backed by Scalar and `/openapi.json`.
+Returns an interactive API reference backed by Scalar and `/openapi.json`. This endpoint is only registered when `EXPOSE_DOCS=true`.
 
 ### `GET /llms.txt`
 
-Returns Markdown API documentation generated from the OpenAPI specification.
+Returns Markdown API documentation generated from the OpenAPI specification. This endpoint is only registered when `EXPOSE_LLMS_TXT=true`.
 
 ## Manual smoke test
 

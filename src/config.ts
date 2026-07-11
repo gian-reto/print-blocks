@@ -61,6 +61,8 @@ export type AppConfig = {
   printerCharacterSet: CharacterSet;
   printTimeoutMs: number;
   apiToken: string;
+  exposeDocs: boolean;
+  exposeLlmsTxt: boolean;
   maxRequestBodyBytes: number;
   maxBlocksPerPrintJob: number;
   maxTextCharsPerBlock: number;
@@ -68,6 +70,31 @@ export type AppConfig = {
 
 const emptyStringToUndefined = (value: unknown) =>
   value === "" ? undefined : value;
+
+const booleanFromEnv = (defaultValue: boolean) =>
+  z.preprocess((value) => {
+    const normalizedValue = emptyStringToUndefined(value);
+
+    if (normalizedValue === undefined) {
+      return defaultValue;
+    }
+
+    if (typeof normalizedValue !== "string") {
+      return normalizedValue;
+    }
+
+    const booleanString = normalizedValue.trim().toLowerCase();
+
+    if (["1", "true", "yes", "on"].includes(booleanString)) {
+      return true;
+    }
+
+    if (["0", "false", "no", "off"].includes(booleanString)) {
+      return false;
+    }
+
+    return normalizedValue;
+  }, z.boolean());
 
 const integerFromEnv = (defaultValue: number) =>
   z.preprocess((value) => {
@@ -109,6 +136,8 @@ const envSchema = z
     ),
     PRINT_TIMEOUT_MS: integerFromEnv(15_000),
     API_TOKEN: z.string().min(32),
+    EXPOSE_DOCS: booleanFromEnv(false),
+    EXPOSE_LLMS_TXT: booleanFromEnv(false),
     MAX_BLOCKS_PER_PRINT_JOB: integerFromEnv(50),
     MAX_REQUEST_BODY_BYTES: integerFromEnv(10 * 1024 * 1024),
     MAX_TEXT_CHARS_PER_BLOCK: integerFromEnv(5_000),
@@ -131,6 +160,8 @@ export const loadConfig = (env: NodeJS.ProcessEnv = process.env): AppConfig => {
     printerCharacterSet: parsedEnv.PRINTER_CHARACTER_SET,
     printTimeoutMs: parsedEnv.PRINT_TIMEOUT_MS,
     apiToken: parsedEnv.API_TOKEN,
+    exposeDocs: parsedEnv.EXPOSE_DOCS,
+    exposeLlmsTxt: parsedEnv.EXPOSE_LLMS_TXT,
     maxBlocksPerPrintJob: parsedEnv.MAX_BLOCKS_PER_PRINT_JOB,
     maxRequestBodyBytes: parsedEnv.MAX_REQUEST_BODY_BYTES,
     maxTextCharsPerBlock: parsedEnv.MAX_TEXT_CHARS_PER_BLOCK,

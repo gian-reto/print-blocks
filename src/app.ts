@@ -66,7 +66,7 @@ export const createApp = ({
     transport,
   });
   registerHealthRoute(app);
-  registerOpenApiRoute(app);
+  registerOpenApiRoute(app, config);
 
   app.onError((error, c) => {
     console.error(error);
