@@ -17,6 +17,7 @@ import {
 } from "@react-thermal-printer/image";
 import type { ReactNode } from "react";
 import { renderPrintJob, type PrinterRenderOptions } from "./render-print-job";
+import { getPrinterDotWidth } from "./blocks/context";
 import type { PrintBlock } from "./blocks/schema";
 import { whitePixelPngBase64 } from "../test/fixtures/image";
 import sharp from "sharp";
@@ -27,9 +28,23 @@ const options: PrinterRenderOptions = {
   characterSet: "pc437_usa",
 };
 
-const readImageBase64 = async (src: string): Promise<ImageData> => {
+type ImageResizeOptions = {
+  fit: (typeof sharp.fit)[keyof typeof sharp.fit];
+  printerDotWidth: number;
+  withoutEnlargement: boolean;
+};
+
+const readImageBase64 = async (
+  src: string,
+  resize: ImageResizeOptions,
+): Promise<ImageData> => {
   const image = Buffer.from(src, "base64");
   const { data, info } = await sharp(image)
+    .resize({
+      width: resize.printerDotWidth,
+      fit: resize.fit,
+      withoutEnlargement: resize.withoutEnlargement,
+    })
     .toColorspace("srgb")
     .ensureAlpha()
     .raw()
@@ -55,6 +70,11 @@ const expectRender = async (blocks: PrintBlock[], children: ReactNode) => {
 };
 
 describe("renderPrintJob", () => {
+  it("derives printer dot width from printer text width", () => {
+    expect(getPrinterDotWidth(32)).toBe(384);
+    expect(getPrinterDotWidth(48)).toBe(576);
+  });
+
   it("renders barcode blocks", async () => {
     const blocks: PrintBlock[] = [
       {
@@ -107,6 +127,8 @@ describe("renderPrintJob", () => {
         type: "image",
         src: whitePixelPngBase64,
         align: "center",
+        fit: sharp.fit.inside,
+        withoutEnlargement: false,
         transforms: [transforms.floydSteinberg],
         rgbToBlack,
       },
@@ -119,7 +141,13 @@ describe("renderPrintJob", () => {
         align="center"
         transforms={[transforms.floydSteinberg]}
         rgbToBlack={rgbToBlack}
-        reader={({ props: { src } }) => readImageBase64(src)}
+        reader={({ props: { src } }) =>
+          readImageBase64(src, {
+            fit: sharp.fit.inside,
+            printerDotWidth: getPrinterDotWidth(options.width),
+            withoutEnlargement: false,
+          })
+        }
       />,
     );
   });

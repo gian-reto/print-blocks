@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { createImageBlockSchema } from "./schema";
+import sharp from "sharp";
 import { transforms } from "@react-thermal-printer/image";
 import { whitePixelPngBase64 } from "../../../test/fixtures/image";
 
@@ -16,6 +17,8 @@ describe("image block schema", () => {
     expect(result).toEqual({
       type: "image",
       src: whitePixelPngBase64,
+      fit: sharp.fit.inside,
+      withoutEnlargement: true,
     });
   });
 
@@ -24,6 +27,8 @@ describe("image block schema", () => {
       type: "image",
       src: whitePixelPngBase64,
       align: "center",
+      fit: "cover",
+      withoutEnlargement: false,
       transforms: ["floydSteinberg"],
       rgbToBlack: 230,
     });
@@ -32,6 +37,8 @@ describe("image block schema", () => {
       type: "image",
       src: whitePixelPngBase64,
       align: "center",
+      fit: sharp.fit.cover,
+      withoutEnlargement: false,
       transforms: [transforms.floydSteinberg],
       rgbToBlack: expect.any(Function),
     });
@@ -49,6 +56,22 @@ describe("image block schema", () => {
     expect(result).toEqual({
       type: "image",
       src: whitePixelPngBase64,
+      fit: sharp.fit.inside,
+      withoutEnlargement: true,
+    });
+  });
+
+  it.each(Object.values(sharp.fit))("accepts sharp fit mode %s", (fit) => {
+    const result = createSchema().parse({
+      type: "image",
+      src: whitePixelPngBase64,
+      fit,
+    });
+
+    expect(result).toMatchObject({
+      type: "image",
+      src: whitePixelPngBase64,
+      fit,
     });
   });
 
@@ -96,6 +119,26 @@ describe("image block schema", () => {
       type: "image",
       src: whitePixelPngBase64,
       align: "top",
+    });
+
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects invalid fit modes", () => {
+    const result = createSchema().safeParse({
+      type: "image",
+      src: whitePixelPngBase64,
+      fit: "invalid",
+    });
+
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects invalid withoutEnlargement values", () => {
+    const result = createSchema().safeParse({
+      type: "image",
+      src: whitePixelPngBase64,
+      withoutEnlargement: "false",
     });
 
     expect(result.success).toBe(false);

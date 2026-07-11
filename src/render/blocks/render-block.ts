@@ -1,3 +1,4 @@
+import type { BlockRenderContext } from "./context";
 import type { PrintBlock } from "./schema";
 import { renderBarcodeBlock } from "./barcode";
 import { renderBrBlock } from "./br";
@@ -8,7 +9,7 @@ import { renderRowBlock } from "./row";
 import { renderTextBlock } from "./text";
 import { unreachable } from "../../util/unreachable";
 
-export const renderBlock = (block: PrintBlock) => {
+export const renderBlock = (block: PrintBlock, context: BlockRenderContext) => {
   switch (block.type) {
     case "barcode":
       return renderBarcodeBlock(block);
@@ -17,7 +18,7 @@ export const renderBlock = (block: PrintBlock) => {
       return renderBrBlock(block);
 
     case "image":
-      return renderImageBlock(block);
+      return renderImageBlock(block, context);
 
     case "line":
       return renderLineBlock(block);

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { createPrintRequestSchema } from "./schema";
+import sharp from "sharp";
 import { whitePixelPngBase64 } from "../../test/fixtures/image";
 
 const createSchema = () =>
@@ -74,7 +75,15 @@ describe("print request schema", () => {
     });
 
     expect(result).toEqual({
-      blocks: [{ type: "image", src: whitePixelPngBase64, align: "center" }],
+      blocks: [
+        {
+          type: "image",
+          src: whitePixelPngBase64,
+          align: "center",
+          fit: sharp.fit.inside,
+          withoutEnlargement: true,
+        },
+      ],
     });
   });
 

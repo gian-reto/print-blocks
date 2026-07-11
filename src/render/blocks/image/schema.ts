@@ -1,5 +1,7 @@
 import type { ImageToRasterOptions } from "@react-thermal-printer/image";
 import { entriesOf } from "../../../util/entries-of";
+import { keys } from "remeda";
+import sharp from "sharp";
 import { transforms } from "@react-thermal-printer/image";
 import { z } from "@hono/zod-openapi";
 
@@ -19,6 +21,19 @@ export const createImageBlockSchema = () =>
       align: z.enum(["left", "center", "right"]).optional().openapi({
         description: "Horizontal alignment of the printed image.",
         example: "center",
+      }),
+      fit: z
+        .enum<readonly (keyof typeof sharp.fit)[]>(keys(sharp.fit))
+        .default(sharp.fit.inside)
+        .openapi({
+          description:
+            "Resize fit mode used when scaling the image to the printer width.",
+          example: sharp.fit.inside,
+        }),
+      withoutEnlargement: z.boolean().default(true).openapi({
+        description:
+          "Do not enlarge image if it is already smaller than the printer width.",
+        example: true,
       }),
       transforms: z
         .array(

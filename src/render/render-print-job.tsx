@@ -1,8 +1,10 @@
-import { Fragment } from "react";
 import type { CharacterSet, PrinterType } from "react-thermal-printer";
 import { Cut, Printer, render } from "react-thermal-printer";
-import { renderBlock } from "./blocks";
+
+import { Fragment } from "react";
 import type { PrintBlock } from "./blocks/schema";
+import { getPrinterDotWidth } from "./blocks/context";
+import { renderBlock } from "./blocks";
 
 export type PrinterRenderOptions = {
   type: PrinterType;
@@ -14,6 +16,10 @@ export const renderPrintJob = async (
   blocks: PrintBlock[],
   options: PrinterRenderOptions,
 ): Promise<Uint8Array> => {
+  const blockRenderContext = {
+    printerDotWidth: getPrinterDotWidth(options.width),
+  };
+
   const receipt = (
     <Printer
       type={options.type}
@@ -21,7 +27,9 @@ export const renderPrintJob = async (
       characterSet={options.characterSet}
     >
       {blocks.map((block, index) => (
-        <Fragment key={index}>{renderBlock(block)}</Fragment>
+        <Fragment key={index}>
+          {renderBlock(block, blockRenderContext)}
+        </Fragment>
       ))}
       <Cut />
     </Printer>

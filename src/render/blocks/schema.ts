@@ -53,6 +53,8 @@ export const createPrintRequestSchema = (options: {
               type: "image",
               src: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII=",
               align: "center",
+              fit: "inside",
+              withoutEnlargement: true,
               transforms: ["floydSteinberg"],
             },
             {

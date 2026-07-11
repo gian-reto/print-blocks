@@ -1,3 +1,4 @@
+import type { BlockRenderContext } from "../context";
 import type { ComponentProps } from "react";
 import { Image } from "react-thermal-printer";
 import type { ImageBlock } from "./schema";
@@ -8,25 +9,39 @@ import sharp from "sharp";
 
 type ImageProps = ComponentProps<typeof Image>;
 
-const reader: NonNullable<ImageProps["reader"]> = async ({
-  props: { src },
-}): Promise<ImageData> => {
-  const image = Buffer.from(src, "base64");
-  const { data, info } = await sharp(image)
-    .toColorspace("srgb")
-    .ensureAlpha()
-    .raw()
-    .toBuffer({ resolveWithObject: true });
+const createReader = (
+  block: ImageBlock,
+  context: BlockRenderContext,
+): NonNullable<ImageProps["reader"]> => {
+  return async ({ props: { src } }): Promise<ImageData> => {
+    const image = Buffer.from(src, "base64");
+    const { data, info } = await sharp(image)
+      .resize({
+        width: context.printerDotWidth,
+        fit: block.fit,
+        withoutEnlargement: block.withoutEnlargement,
+      })
+      .toColorspace("srgb")
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
 
-  return {
-    data: new Uint8Array(data),
-    width: info.width,
-    height: info.height,
+    return {
+      data: new Uint8Array(data),
+      width: info.width,
+      height: info.height,
+    };
   };
 };
 
-export const renderImageBlock = (block: ImageBlock) => {
-  const props: ImageProps = { ...omitUndefined(omit(["type"])(block)), reader };
+export const renderImageBlock = (
+  block: ImageBlock,
+  context: BlockRenderContext,
+) => {
+  const props: ImageProps = {
+    ...omitUndefined(omit(["fit", "type", "withoutEnlargement"])(block)),
+    reader: createReader(block, context),
+  };
 
   return <Image {...props} />;
 };
