@@ -4,12 +4,37 @@ import {
 } from "../render/blocks/schema";
 import { packageInfo } from "../util/package-info";
 
+type SchemaWithDef = {
+  def: {
+    options?: readonly SchemaWithDef[];
+    shape?: {
+      type?: {
+        value?: unknown;
+      };
+    };
+  };
+};
+
+const getBlockTypeValues = (schema: SchemaWithDef): string[] => {
+  const typeValue = schema.def.shape?.type?.value;
+
+  if (typeof typeValue === "string") {
+    return [typeValue];
+  }
+
+  return schema.def.options?.flatMap(getBlockTypeValues) ?? [];
+};
+
 // Derive supported block types from the print block schema to ensure
 // consistency with actual supported blocks.
-export const supportedBlockTypes = createPrintBlockSchema({
-  allowRemoteImageUrls: true,
-  maxTextCharsPerBlock: 1,
-}).def.options.map((option) => option.def.shape.type.value);
+export const supportedBlockTypes = Array.from(
+  new Set(
+    createPrintBlockSchema({
+      allowRemoteImageUrls: true,
+      maxTextCharsPerBlock: 1,
+    }).def.options.flatMap((option) => getBlockTypeValues(option)),
+  ),
+);
 
 export const simplePrintRequestExample = JSON.stringify(
   {

@@ -158,6 +158,16 @@ describe("print request schema", () => {
     });
   });
 
+  it("accepts progress blocks", () => {
+    const result = createSchema().parse({
+      blocks: [{ type: "progress", variant: "bar", value: 67, max: 100 }],
+    });
+
+    expect(result).toEqual({
+      blocks: [{ type: "progress", variant: "bar", value: 67, max: 100 }],
+    });
+  });
+
   it("accepts qrcode blocks", () => {
     const result = createSchema().parse({
       blocks: [{ type: "qrcode", content: "Hello", align: "center" }],

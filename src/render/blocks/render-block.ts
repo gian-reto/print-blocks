@@ -7,6 +7,7 @@ import { renderBrBlock } from "./br";
 import { renderImageBlock } from "./image";
 import { renderLineBlock } from "./line";
 import { renderLineChartBlock } from "./chart/line";
+import { renderProgressBlock } from "./progress";
 import { renderQrCodeBlock } from "./qrcode";
 import { renderRowBlock } from "./row";
 import { renderStackedAreaChartBlock } from "./chart/stacked-area";
@@ -36,6 +37,9 @@ export const renderBlock = (block: PrintBlock, context: BlockRenderContext) => {
 
     case "lineChart":
       return renderLineChartBlock(block, context);
+
+    case "progress":
+      return renderProgressBlock(block, context);
 
     case "qrcode":
       return renderQrCodeBlock(block);

@@ -70,6 +70,20 @@ describe("renderPrintJob", () => {
           content: "LOREM IPSUM",
         },
         {
+          type: "progress",
+          variant: "bar",
+          value: 67,
+          max: 100,
+        },
+        {
+          type: "progress",
+          variant: "steps",
+          value: 4,
+          max: 10,
+          steps: 10,
+          style: "circles",
+        },
+        {
           type: "lineChart",
           series: [
             { label: "API", values: [120, 140, 110] },

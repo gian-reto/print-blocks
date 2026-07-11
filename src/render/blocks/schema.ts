@@ -10,6 +10,7 @@ import { createBarcodeBlockSchema, type BarcodeBlock } from "./barcode/schema";
 import { createBrBlockSchema, type BrBlock } from "./br/schema";
 import { createImageBlockSchema, type ImageBlock } from "./image/schema";
 import { createLineBlockSchema, type LineBlock } from "./line/schema";
+import { createProgressBlockSchema, type ProgressBlock } from "./progress";
 import { createQrCodeBlockSchema, type QrCodeBlock } from "./qrcode/schema";
 import { createRowBlockSchema, type RowBlock } from "./row/schema";
 import { createTextBlockSchema, type TextBlock } from "./text/schema";
@@ -33,9 +34,10 @@ export const createPrintBlockSchema = (
       allowRemoteImageUrls: options.allowRemoteImageUrls,
     }),
     createLineBlockSchema(),
+    createLineChartBlockSchema(options.maxTextCharsPerBlock),
+    createProgressBlockSchema(options.maxTextCharsPerBlock),
     createQrCodeBlockSchema(),
     createRowBlockSchema(options.maxTextCharsPerBlock),
-    createLineChartBlockSchema(options.maxTextCharsPerBlock),
     createStackedAreaChartBlockSchema(options.maxTextCharsPerBlock),
     createTextBlockSchema(options.maxTextCharsPerBlock),
     createTokenBlockSchema(options.maxTextCharsPerBlock),
@@ -49,6 +51,7 @@ export type PrintBlock =
   | ImageBlock
   | LineBlock
   | LineChartBlock
+  | ProgressBlock
   | QrCodeBlock
   | RowBlock
   | StackedAreaChartBlock
@@ -115,6 +118,12 @@ export const createPrintRequestSchema = (options: {
                 { label: "DB", values: [80, 90, 95] },
               ],
               xLabels: ["10:00", "10:05", "10:10"],
+            },
+            {
+              type: "progress",
+              variant: "bar",
+              value: 67,
+              max: 100,
             },
             {
               type: "qrcode",
