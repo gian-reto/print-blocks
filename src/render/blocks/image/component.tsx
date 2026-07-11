@@ -1,3 +1,5 @@
+import { isSupportedImageFormat, supportedImageFormats } from "./formats";
+
 import type { BlockRenderContext } from "../context";
 import type { ComponentProps } from "react";
 import { Image } from "react-thermal-printer";
@@ -42,9 +44,19 @@ const createReader = (
 
     try {
       const image = await readImageData(block, context);
-      const renderedImage = await sharp(image, {
+      const sharpImage = sharp(image, {
         limitInputPixels: context.imageSource.maxImageInputPixels,
-      })
+      });
+      const metadata = await sharpImage.metadata();
+
+      if (!isSupportedImageFormat(metadata.format)) {
+        throw new ImageRenderError(
+          "IMAGE_UNSUPPORTED_FORMAT",
+          `Unsupported image format: ${metadata.format}. Supported image formats are: ${supportedImageFormats.join(", ")}.`,
+        );
+      }
+
+      const renderedImage = await sharpImage
         .resize({
           width: context.printerDotWidth,
           fit: block.fit,

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { ImageRenderError } from "../../render/blocks/image/error";
 import { createRenderFailureToolResult } from "./print";
+import { supportedImageFormats } from "../../render/blocks/image";
 
 describe("createRenderFailureToolResult", () => {
   it("surfaces actionable image render errors", () => {
@@ -41,5 +42,27 @@ describe("createRenderFailureToolResult", () => {
       },
     });
     expect(result.content[0]?.text).not.toContain("secret detail");
+  });
+
+  it("surfaces unsupported image format errors", () => {
+    const result = createRenderFailureToolResult(
+      new ImageRenderError(
+        "IMAGE_UNSUPPORTED_FORMAT",
+        `Unsupported image format: gif. Supported image formats are: ${supportedImageFormats.join(", ")}.`,
+      ),
+    );
+
+    expect(result).toMatchObject({
+      isError: true,
+      structuredContent: {
+        ok: false,
+        printed: false,
+        error: {
+          code: "IMAGE_UNSUPPORTED_FORMAT",
+          message: `Unsupported image format: gif. Supported image formats are: ${supportedImageFormats.join(", ")}.`,
+        },
+      },
+    });
+    expect(result.content[0]?.text).toContain("IMAGE_UNSUPPORTED_FORMAT");
   });
 });
