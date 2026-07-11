@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  Barcode,
   Br,
   Cut,
   Line,
@@ -32,10 +33,32 @@ const expectRender = async (blocks: PrintBlock[], children: ReactNode) => {
 };
 
 describe("renderPrintJob", () => {
-  it("renders text blocks", async () => {
-    const blocks: PrintBlock[] = [{ type: "text", content: "Hello" }];
+  it("renders barcode blocks", async () => {
+    const blocks: PrintBlock[] = [
+      {
+        type: "barcode",
+        format: "CODE128",
+        content: "{B1234567890",
+        align: "center",
+        hriPosition: "bottom",
+        hriFont: "A",
+        width: 3,
+        height: 100,
+      },
+    ];
 
-    await expectRender(blocks, <Text>Hello</Text>);
+    await expectRender(
+      blocks,
+      <Barcode
+        type="CODE128"
+        content="{B1234567890"
+        align="center"
+        hriPosition="bottom"
+        hriFont="A"
+        width={3}
+        height={100}
+      />,
+    );
   });
 
   it("renders br blocks", async () => {
@@ -94,5 +117,11 @@ describe("renderPrintJob", () => {
         gap={1}
       />,
     );
+  });
+
+  it("renders text blocks", async () => {
+    const blocks: PrintBlock[] = [{ type: "text", content: "Hello" }];
+
+    await expectRender(blocks, <Text>Hello</Text>);
   });
 });

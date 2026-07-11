@@ -1,4 +1,5 @@
 import { z } from "@hono/zod-openapi";
+import { createBarcodeBlockSchema, type BarcodeBlock } from "./barcode/schema";
 import { createBrBlockSchema, type BrBlock } from "./br/schema";
 import { createLineBlockSchema, type LineBlock } from "./line/schema";
 import { createQrCodeBlockSchema, type QrCodeBlock } from "./qrcode/schema";
@@ -7,6 +8,7 @@ import { createTextBlockSchema, type TextBlock } from "./text/schema";
 
 export const createPrintBlockSchema = (maxTextCharsPerBlock: number) =>
   z.discriminatedUnion("type", [
+    createBarcodeBlockSchema(),
     createBrBlockSchema(),
     createLineBlockSchema(),
     createQrCodeBlockSchema(),
@@ -15,6 +17,7 @@ export const createPrintBlockSchema = (maxTextCharsPerBlock: number) =>
   ]);
 
 export type PrintBlock =
+  | BarcodeBlock
   | BrBlock
   | LineBlock
   | QrCodeBlock
@@ -33,6 +36,13 @@ export const createPrintRequestSchema = (options: {
         .max(options.maxBlocksPerPrintJob)
         .openapi({
           example: [
+            {
+              type: "barcode",
+              format: "CODE128",
+              content: "{B1234567890",
+              align: "center",
+              hriPosition: "bottom",
+            },
             {
               type: "br",
             },

@@ -33,6 +33,30 @@ describe("print request schema", () => {
     });
   });
 
+  it("accepts barcode blocks", () => {
+    const result = createSchema().parse({
+      blocks: [
+        {
+          type: "barcode",
+          format: "CODE128",
+          content: "{B12345",
+          align: "center",
+        },
+      ],
+    });
+
+    expect(result).toEqual({
+      blocks: [
+        {
+          type: "barcode",
+          format: "CODE128",
+          content: "{B12345",
+          align: "center",
+        },
+      ],
+    });
+  });
+
   it("accepts br blocks", () => {
     const result = createSchema().parse({
       blocks: [{ type: "br" }],

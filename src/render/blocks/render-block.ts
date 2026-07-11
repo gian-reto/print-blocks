@@ -1,4 +1,5 @@
 import type { PrintBlock } from "./schema";
+import { renderBarcodeBlock } from "./barcode";
 import { renderBrBlock } from "./br";
 import { renderLineBlock } from "./line";
 import { renderQrCodeBlock } from "./qrcode";
@@ -8,6 +9,9 @@ import { unreachable } from "../../util/unreachable";
 
 export const renderBlock = (block: PrintBlock) => {
   switch (block.type) {
+    case "barcode":
+      return renderBarcodeBlock(block);
+
     case "br":
       return renderBrBlock(block);
 
