@@ -32,6 +32,16 @@ describe("print request schema", () => {
     });
   });
 
+  it("accepts br blocks", () => {
+    const result = createSchema().parse({
+      blocks: [{ type: "br" }],
+    });
+
+    expect(result).toEqual({
+      blocks: [{ type: "br" }],
+    });
+  });
+
   it("rejects empty block arrays", () => {
     const result = createSchema().safeParse({ blocks: [] });
 
